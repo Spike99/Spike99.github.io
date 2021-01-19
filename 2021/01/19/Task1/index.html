@@ -13,12 +13,10 @@
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="简介: DW第21期数据分析方向–目标15天内完成小型论文分析项目 目标: 论⽂文数量量统计（数据统计任务）：统计2019年年全年年，计算机各个⽅方向论⽂文数量量；数据集:  https:&#x2F;&#x2F;www.kaggle.com&#x2F;Cornell-University&#x2F;arxiv  数据集的格式如下：    id：arXiv ID，可⽤用于访问论⽂文；  submitter：论⽂文提交者；  authors">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2021/01/19/Task1/output_17_0.png">
 <meta property="article:published_time" content="2021-01-19T14:01:50.641Z">
-<meta property="article:modified_time" content="2021-01-19T14:15:52.045Z">
+<meta property="article:modified_time" content="2021-01-19T14:36:36.116Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2021/01/19/Task1/output_17_0.png">
   
     <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -626,7 +624,8 @@ f.close()</code></pre>
 
 <h2 id="任务3数据可视化"><a href="#任务3数据可视化" class="headerlink" title="任务3数据可视化"></a>任务3数据可视化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要使用matplotlib库</span></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">15</span>, <span class="number">12</span>)) <span class="comment">#设置图大小</span></span><br><span class="line">explode = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.2</span>, <span class="number">0.1</span>)</span><br><span class="line">plt.pie(_df[<span class="string">&quot;count&quot;</span>], labels = _df[<span class="string">&quot;group_name&quot;</span>], autopct = <span class="string">&#x27;%1.2f%%&#x27;</span>,\</span><br><span class="line">       startangle=<span class="number">160</span>, explode=explode)</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="output_17_0.png" alt="png"></p>
+
+
 <blockquote>
 <p>额外任务统计各个子领域内2019年及以后的paper数量</p>
 </blockquote>
@@ -872,7 +871,7 @@ f.close()</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk434siq00047wu56gi58gs3" data-title="The TASK1" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk44fnf90003vku581no3ti1" data-title="The TASK1" class="article-share-link">Share</a>
       
       
       
@@ -930,10 +929,6 @@ f.close()</code></pre>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
-        
-          <li>
-            <a href="/2021/01/19/asdf/">asdf</a>
-          </li>
         
           <li>
             <a href="/2021/01/19/Task3/">The TASK3</a>

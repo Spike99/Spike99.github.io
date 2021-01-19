@@ -71,45 +71,6 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-asdf" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
-  <div class="article-meta">
-    <a href="/2021/01/19/asdf/" class="article-date">
-  <time class="dt-published" datetime="2021-01-19T14:15:02.000Z" itemprop="datePublished">2021-01-19</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="p-name article-title" href="/2021/01/19/asdf/">asdf</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="e-content article-entry" itemprop="articleBody">
-      
-        <p>阿什杜父阿斯蒂芬撒地方</p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/asdf/" data-id="ckk434sia00027wu5aqso4p3z" data-title="asdf" class="article-share-link">Share</a>
-      
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-  
     <article id="post-Task3" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/01/19/Task3/" class="article-date">
@@ -621,7 +582,10 @@ Name: pages, dtype: int32</code></pre>
 
 
 <pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x240be75c6a0&gt;</code></pre>
-<p><img src="output_15_1.png" alt="png"></p>
+<!-- ![png](output_15_1.png) -->
+
+
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#对论文指数执行相同处理</span></span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;comments&#x27;</span>]\</span><br><span class="line">    .apply(<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* figures&#x27;</span>, <span class="built_in">str</span>(x)))</span><br><span class="line"><span class="comment">#lambda表达式中不要用\回车进行分割</span></span><br><span class="line">data = data[data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="built_in">len</span>) &gt; <span class="number">0</span>]</span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="keyword">lambda</span> x : <span class="built_in">float</span>(x[<span class="number">0</span>].replace(<span class="string">&#x27; figures&#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br></pre></td></tr></table></figure>
 <h3 id="任务3有效信息处理"><a href="#任务3有效信息处理" class="headerlink" title="任务3有效信息处理"></a>任务3有效信息处理</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(pd.__version__)</span><br></pre></td></tr></table></figure>
 <pre><code>1.0.5</code></pre>
@@ -632,7 +596,11 @@ Name: pages, dtype: int32</code></pre>
 
 
 <pre><code>&lt;matplotlib.axes._subplots.AxesSubplot at 0x24037355430&gt;</code></pre>
-<p><img src="output_20_1.png" alt="png"></p>
+<!-- ![png](output_20_1.png) -->
+
+
+
+
 <h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
 <ul>
 <li>想利用github page搭建私人博客</li>
@@ -643,7 +611,7 @@ Name: pages, dtype: int32</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task3/" data-id="ckk434sia00017wu5h5h5gbcs" data-title="The TASK3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task3/" data-id="ckk44fnee0000vku57ze0fvo9" data-title="The TASK3" class="article-share-link">Share</a>
       
       
       
@@ -859,7 +827,7 @@ smart</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk434sia00007wu53pxo5a5z" data-title="The TASK2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk44fneu0001vku5gtamcmf8" data-title="The TASK2" class="article-share-link">Share</a>
       
       
       
@@ -1422,7 +1390,8 @@ f.close()</code></pre>
 
 <h2 id="任务3数据可视化"><a href="#任务3数据可视化" class="headerlink" title="任务3数据可视化"></a>任务3数据可视化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要使用matplotlib库</span></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">15</span>, <span class="number">12</span>)) <span class="comment">#设置图大小</span></span><br><span class="line">explode = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.2</span>, <span class="number">0.1</span>)</span><br><span class="line">plt.pie(_df[<span class="string">&quot;count&quot;</span>], labels = _df[<span class="string">&quot;group_name&quot;</span>], autopct = <span class="string">&#x27;%1.2f%%&#x27;</span>,\</span><br><span class="line">       startangle=<span class="number">160</span>, explode=explode)</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
 
-<p><img src="output_17_0.png" alt="png"></p>
+
+
 <blockquote>
 <p>额外任务统计各个子领域内2019年及以后的paper数量</p>
 </blockquote>
@@ -1668,7 +1637,7 @@ f.close()</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk434siq00047wu56gi58gs3" data-title="The TASK1" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk44fnf90003vku581no3ti1" data-title="The TASK1" class="article-share-link">Share</a>
       
       
       
@@ -1715,7 +1684,7 @@ f.close()</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/hello-world/" data-id="ckk434sia00037wu5hh8ehahr" data-title="Hello World" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/hello-world/" data-id="ckk44fneu0002vku5ho0jch5t" data-title="Hello World" class="article-share-link">Share</a>
       
       
       
@@ -1756,10 +1725,6 @@ f.close()</code></pre>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
-        
-          <li>
-            <a href="/2021/01/19/asdf/">asdf</a>
-          </li>
         
           <li>
             <a href="/2021/01/19/Task3/">The TASK3</a>
