@@ -71,6 +71,561 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Task4" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/01/22/Task4/" class="article-date">
+  <time class="dt-published" datetime="2021-01-22T15:18:39.414Z" itemprop="datePublished">2021-01-22</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/01/22/Task4/">The TASK4</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="任务简述"><a href="#任务简述" class="headerlink" title="任务简述"></a>任务简述</h2><p><code>学习主题：</code>论⽂文分类（数据建模任务），利利⽤用已有数据建模，对新论⽂文进⾏行行类别分类；<br><code>学习内容：</code>使⽤用论⽂文标题完成类别分类；<br><code>学习成果：</code>学会⽂文本分类的基本⽅方法、TF-IDF等  </p>
+<hr>
+<h2 id="思路介绍"><a href="#思路介绍" class="headerlink" title="思路介绍"></a>思路介绍</h2><p><code>思路1：TF-IDF+机器学习分类器 </code><br>直接使⽤TF-IDF对⽂文本提取特征，使⽤用分类器器进⾏分类，分类器的选择上可以使⽤SVM、LR、XGboost 等<br><code>思路2：FastText </code><br>FastText是⼊门款的词向量量，利用Facebook提供的FastText⼯具，可以快速构建分类器<br><code>思路3：WordVec+深度学习分类器 </code><br>WordVec是进阶款的词向量，并通过构建深度学习分类完成分类。深度学习分类的⽹络结构可以选择 TextCNN、TextRnn或者BiLSTM。<br><code>思路路4：Bert词向量 </code><br>Bert是⾼配款的词向量，具有强⼤的建模学习能⼒。 </p>
+<h2 id="任务1导入数据"><a href="#任务1导入数据" class="headerlink" title="任务1导入数据"></a>任务1导入数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&#x27;arxiv-metadata-oai-snapshot.json&#x27;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> idx, line <span class="keyword">in</span> <span class="built_in">enumerate</span>(f):</span><br><span class="line">        d = json.loads(line);</span><br><span class="line">        d = &#123;<span class="string">&#x27;title&#x27;</span> : d[<span class="string">&#x27;title&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>], \</span><br><span class="line">            <span class="string">&#x27;abstract&#x27;</span> : d[<span class="string">&#x27;abstract&#x27;</span>]&#125;</span><br><span class="line">        data.append(d)</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span>(idx &gt; <span class="number">200000</span>): <span class="comment">#删选出200002个数据</span></span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">            </span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data <span class="comment">#查看数据</span></span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>categories</th>
+      <th>abstract</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Calculation of prompt diphoton production cros...</td>
+      <td>hep-ph</td>
+      <td>A fully differential calculation in perturba...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sparsity-certifying Graph Decompositions</td>
+      <td>math.CO cs.CG</td>
+      <td>We describe a new algorithm, the $(k,\ell)$-...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>The evolution of the Earth-Moon system based o...</td>
+      <td>physics.gen-ph</td>
+      <td>The evolution of Earth-Moon system is descri...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>A determinant of Stirling cycle numbers counts...</td>
+      <td>math.CO</td>
+      <td>We show that a determinant of Stirling cycle...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>From dyadic $\Lambda_{\alpha}$ to $\Lambda_{\a...</td>
+      <td>math.CA math.FA</td>
+      <td>In this paper we show how to compute the $\L...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>199997</th>
+      <td>Relaxation dynamics of stochastic long-range i...</td>
+      <td>cond-mat.stat-mech</td>
+      <td>Long-range interacting systems, while relaxi...</td>
+    </tr>
+    <tr>
+      <th>199998</th>
+      <td>Identification of a connection from Cauchy dat...</td>
+      <td>math.DG math.AP</td>
+      <td>We consider a connection $\nabla^X$ on a com...</td>
+    </tr>
+    <tr>
+      <th>199999</th>
+      <td>Adhesive penetration in Beech wood Part II: Pe...</td>
+      <td>cond-mat.mtrl-sci</td>
+      <td>We propose an analytical model to predict th...</td>
+    </tr>
+    <tr>
+      <th>200000</th>
+      <td>Adhesive Penetration in Beech Wood Part I: Exp...</td>
+      <td>cond-mat.mtrl-sci</td>
+      <td>A study with synchrotron radiation X-ray tom...</td>
+    </tr>
+    <tr>
+      <th>200001</th>
+      <td>Supernovae Powered by Collapsar Accretion in G...</td>
+      <td>astro-ph.HE astro-ph.SR</td>
+      <td>The association of long-duration gamma-ray b...</td>
+    </tr>
+  </tbody>
+</table>
+<p>200002 rows × 3 columns</p>
+</div>
+
+
+
+<h2 id="任务2数据处理"><a href="#任务2数据处理" class="headerlink" title="任务2数据处理"></a>任务2数据处理</h2><ol>
+<li>将abstrct列和title列整合</li>
+<li>处理categories列,关注多类别</li>
+</ol>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;text&#x27;</span>] = data[<span class="string">&#x27;title&#x27;</span>] + data[<span class="string">&#x27;abstract&#x27;</span>]</span><br><span class="line">data[<span class="string">&#x27;text&#x27;</span>] = data[<span class="string">&#x27;text&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.replace(<span class="string">&#x27;\n&#x27;</span>, <span class="string">&#x27; &#x27;</span>))</span><br><span class="line">data[<span class="string">&#x27;text&#x27;</span>] = data[<span class="string">&#x27;text&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.lower())</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>categories</th>
+      <th>abstract</th>
+      <th>text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>Calculation of prompt diphoton production cros...</td>
+      <td>hep-ph</td>
+      <td>A fully differential calculation in perturba...</td>
+      <td>calculation of prompt diphoton production cros...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>Sparsity-certifying Graph Decompositions</td>
+      <td>math.CO cs.CG</td>
+      <td>We describe a new algorithm, the $(k,\ell)$-...</td>
+      <td>sparsity-certifying graph decompositions  we d...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>The evolution of the Earth-Moon system based o...</td>
+      <td>physics.gen-ph</td>
+      <td>The evolution of Earth-Moon system is descri...</td>
+      <td>the evolution of the earth-moon system based o...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>A determinant of Stirling cycle numbers counts...</td>
+      <td>math.CO</td>
+      <td>We show that a determinant of Stirling cycle...</td>
+      <td>a determinant of stirling cycle numbers counts...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>From dyadic $\Lambda_{\alpha}$ to $\Lambda_{\a...</td>
+      <td>math.CA math.FA</td>
+      <td>In this paper we show how to compute the $\L...</td>
+      <td>from dyadic $\lambda_{\alpha}$ to $\lambda_{\a...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>199997</th>
+      <td>Relaxation dynamics of stochastic long-range i...</td>
+      <td>cond-mat.stat-mech</td>
+      <td>Long-range interacting systems, while relaxi...</td>
+      <td>relaxation dynamics of stochastic long-range i...</td>
+    </tr>
+    <tr>
+      <th>199998</th>
+      <td>Identification of a connection from Cauchy dat...</td>
+      <td>math.DG math.AP</td>
+      <td>We consider a connection $\nabla^X$ on a com...</td>
+      <td>identification of a connection from cauchy dat...</td>
+    </tr>
+    <tr>
+      <th>199999</th>
+      <td>Adhesive penetration in Beech wood Part II: Pe...</td>
+      <td>cond-mat.mtrl-sci</td>
+      <td>We propose an analytical model to predict th...</td>
+      <td>adhesive penetration in beech wood part ii: pe...</td>
+    </tr>
+    <tr>
+      <th>200000</th>
+      <td>Adhesive Penetration in Beech Wood Part I: Exp...</td>
+      <td>cond-mat.mtrl-sci</td>
+      <td>A study with synchrotron radiation X-ray tom...</td>
+      <td>adhesive penetration in beech wood part i: exp...</td>
+    </tr>
+    <tr>
+      <th>200001</th>
+      <td>Supernovae Powered by Collapsar Accretion in G...</td>
+      <td>astro-ph.HE astro-ph.SR</td>
+      <td>The association of long-duration gamma-ray b...</td>
+      <td>supernovae powered by collapsar accretion in g...</td>
+    </tr>
+  </tbody>
+</table>
+<p>200002 rows × 4 columns</p>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data = data.drop([<span class="string">&#x27;abstract&#x27;</span>, <span class="string">&#x27;title&#x27;</span>], axis = <span class="number">1</span>)</span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>categories</th>
+      <th>text</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>hep-ph</td>
+      <td>calculation of prompt diphoton production cros...</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>math.CO cs.CG</td>
+      <td>sparsity-certifying graph decompositions  we d...</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>physics.gen-ph</td>
+      <td>the evolution of the earth-moon system based o...</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>math.CO</td>
+      <td>a determinant of stirling cycle numbers counts...</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>math.CA math.FA</td>
+      <td>from dyadic $\lambda_{\alpha}$ to $\lambda_{\a...</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>199997</th>
+      <td>cond-mat.stat-mech</td>
+      <td>relaxation dynamics of stochastic long-range i...</td>
+    </tr>
+    <tr>
+      <th>199998</th>
+      <td>math.DG math.AP</td>
+      <td>identification of a connection from cauchy dat...</td>
+    </tr>
+    <tr>
+      <th>199999</th>
+      <td>cond-mat.mtrl-sci</td>
+      <td>adhesive penetration in beech wood part ii: pe...</td>
+    </tr>
+    <tr>
+      <th>200000</th>
+      <td>cond-mat.mtrl-sci</td>
+      <td>adhesive penetration in beech wood part i: exp...</td>
+    </tr>
+    <tr>
+      <th>200001</th>
+      <td>astro-ph.HE astro-ph.SR</td>
+      <td>supernovae powered by collapsar accretion in g...</td>
+    </tr>
+  </tbody>
+</table>
+<p>200002 rows × 2 columns</p>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;categories&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27; &#x27;</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<h3 id="小实验–split-的功能"><a href="#小实验–split-的功能" class="headerlink" title="小实验–split()的功能"></a>小实验–split()的功能</h3><pre><code>输入:a = &#39;asd 123123,asd oaskf-cxv_123@#$#%#%^$%&#39;
+a = a.split(&#39; &#39;)
+a 
+输出[&#39;asd&#39;, &#39;123123,asd&#39;, &#39;oaskf-cxv_123@#$#%#%^$%&#39;]</code></pre>
+<p>字符串1.split(‘分隔符a’):生成出用a分割字符串1的列表</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;categories_big&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x :\</span><br><span class="line">                              [xx.split(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>] <span class="keyword">for</span> xx <span class="keyword">in</span> x])</span><br><span class="line">data</span><br></pre></td></tr></table></figure>
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>categories</th>
+      <th>text</th>
+      <th>categories_big</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>[hep-ph]</td>
+      <td>calculation of prompt diphoton production cros...</td>
+      <td>[hep-ph]</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>[math.CO, cs.CG]</td>
+      <td>sparsity-certifying graph decompositions  we d...</td>
+      <td>[math, cs]</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>[physics.gen-ph]</td>
+      <td>the evolution of the earth-moon system based o...</td>
+      <td>[physics]</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>[math.CO]</td>
+      <td>a determinant of stirling cycle numbers counts...</td>
+      <td>[math]</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>[math.CA, math.FA]</td>
+      <td>from dyadic $\lambda_{\alpha}$ to $\lambda_{\a...</td>
+      <td>[math, math]</td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td>...</td>
+      <td>...</td>
+      <td>...</td>
+    </tr>
+    <tr>
+      <th>199997</th>
+      <td>[cond-mat.stat-mech]</td>
+      <td>relaxation dynamics of stochastic long-range i...</td>
+      <td>[cond-mat]</td>
+    </tr>
+    <tr>
+      <th>199998</th>
+      <td>[math.DG, math.AP]</td>
+      <td>identification of a connection from cauchy dat...</td>
+      <td>[math, math]</td>
+    </tr>
+    <tr>
+      <th>199999</th>
+      <td>[cond-mat.mtrl-sci]</td>
+      <td>adhesive penetration in beech wood part ii: pe...</td>
+      <td>[cond-mat]</td>
+    </tr>
+    <tr>
+      <th>200000</th>
+      <td>[cond-mat.mtrl-sci]</td>
+      <td>adhesive penetration in beech wood part i: exp...</td>
+      <td>[cond-mat]</td>
+    </tr>
+    <tr>
+      <th>200001</th>
+      <td>[astro-ph.HE, astro-ph.SR]</td>
+      <td>supernovae powered by collapsar accretion in g...</td>
+      <td>[astro-ph, astro-ph]</td>
+    </tr>
+  </tbody>
+</table>
+<p>200002 rows × 3 columns</p>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> MultiLabelBinarizer</span><br><span class="line">mlb = MultiLabelBinarizer()</span><br><span class="line">data_label = mlb.fit_transform(data[<span class="string">&#x27;categories_big&#x27;</span>].iloc[:])</span><br><span class="line">data_label</span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>array([[0, 0, 0, ..., 0, 0, 0],
+       [0, 0, 1, ..., 0, 0, 0],
+       [0, 0, 0, ..., 0, 0, 0],
+       ...,
+       [0, 1, 0, ..., 0, 0, 0],
+       [0, 1, 0, ..., 0, 0, 0],
+       [1, 0, 0, ..., 0, 0, 0]])</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;categories_big&#x27;</span>].iloc[:]</span><br><span class="line"><span class="comment">#综上mlb.fit_transform(...)的功能就是生成二维矩阵</span></span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>0                     [hep-ph]
+1                   [math, cs]
+2                    [physics]
+3                       [math]
+4                 [math, math]
+                  ...         
+199997              [cond-mat]
+199998            [math, math]
+199999              [cond-mat]
+200000              [cond-mat]
+200001    [astro-ph, astro-ph]
+Name: categories_big, Length: 200002, dtype: object</code></pre>
+<h2 id="任务3训练模型"><a href="#任务3训练模型" class="headerlink" title="任务3训练模型"></a>任务3训练模型</h2><h3 id="思路1-用TFIDF提取特征"><a href="#思路1-用TFIDF提取特征" class="headerlink" title="思路1:用TFIDF提取特征"></a>思路1:用TFIDF提取特征</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.feature_extraction.text <span class="keyword">import</span> TfidfVectorizer</span><br><span class="line"><span class="comment">#从sklearn中选取特征值抽取函数</span></span><br><span class="line">vectorizer = TfidfVectorizer(max_features = <span class="number">4000</span>)</span><br><span class="line">data_tfidf = vectorizer.fit_transform(data[<span class="string">&#x27;text&#x27;</span>].iloc[:])</span><br><span class="line"><span class="comment">#抽取text矩阵的特征值</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line"><span class="comment">#引入划分训练集函数</span></span><br><span class="line">x_train, x_test, y_train, y_test = train_test_split(data_tfidf, data_label,</span><br><span class="line">                                       test_size = <span class="number">0.2</span>, random_state = <span class="number">1</span>)</span><br><span class="line">x_train, x_test, y_train, y_test </span><br><span class="line"><span class="comment">#x选取data_tfidf  y选取data_label</span></span><br><span class="line"><span class="comment">#训练集与测试集遵从4:1,完全随机抽取</span></span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>(&lt;160001x4000 sparse matrix of type &#39;&lt;class &#39;numpy.float64&#39;&gt;&#39;
+     with 10919799 stored elements in Compressed Sparse Row format&gt;,
+ &lt;40001x4000 sparse matrix of type &#39;&lt;class &#39;numpy.float64&#39;&gt;&#39;
+     with 2734528 stored elements in Compressed Sparse Row format&gt;,
+ array([[0, 0, 0, ..., 0, 0, 0],
+        [1, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        ...,
+        [0, 1, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        [0, 1, 0, ..., 0, 0, 0]]),
+ array([[0, 1, 0, ..., 0, 0, 0],
+        [0, 1, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        ...,
+        [0, 1, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0],
+        [0, 0, 0, ..., 0, 0, 0]]))</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.multioutput <span class="keyword">import</span> MultiOutputClassifier</span><br><span class="line"><span class="keyword">from</span> sklearn.naive_bayes <span class="keyword">import</span> MultinomialNB</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">clf = MultiOutputClassifier(MultinomialNB()).fit(x_train, y_train)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#检验数据</span></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> classification_report</span><br><span class="line">print(classification_report(y_test, clf.predict(x_test)))</span><br></pre></td></tr></table></figure>
+<pre><code>              precision    recall  f1-score   support
+
+           0       0.95      0.85      0.90      7872
+           1       0.85      0.78      0.81      7329
+           2       0.77      0.72      0.74      2970
+           3       0.00      0.00      0.00         2
+           4       0.72      0.47      0.57      2149
+           5       0.51      0.67      0.58       993
+           6       0.89      0.35      0.50       538
+           7       0.71      0.68      0.70      3657
+           8       0.75      0.62      0.68      3382
+           9       0.85      0.88      0.86     10809
+          10       0.41      0.11      0.18      1796
+          11       0.80      0.04      0.07       737
+          12       0.44      0.33      0.38       540
+          13       0.52      0.34      0.41      1070
+          14       0.70      0.15      0.25      3435
+          15       0.83      0.19      0.31       687
+          16       0.88      0.18      0.30       249
+          17       0.89      0.43      0.58      2565
+          18       0.79      0.36      0.49       689
+
+   micro avg       0.81      0.65      0.72     51469
+   macro avg       0.70      0.43      0.49     51469
+weighted avg       0.80      0.65      0.69     51469
+ samples avg       0.72      0.72      0.70     51469
+
+
+
+D:\Program\anoconda3\lib\site-packages\sklearn\metrics\_classification.py:1245: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in labels with no predicted samples. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))
+D:\Program\anoconda3\lib\site-packages\sklearn\metrics\_classification.py:1245: UndefinedMetricWarning: Precision and F-score are ill-defined and being set to 0.0 in samples with no predicted labels. Use `zero_division` parameter to control this behavior.
+  _warn_prf(average, modifier, msg_start, len(result))</code></pre>
+<h3 id="思路2-使用深度学习模型后进行词嵌入训练"><a href="#思路2-使用深度学习模型后进行词嵌入训练" class="headerlink" title="思路2:使用深度学习模型后进行词嵌入训练"></a>思路2:使用深度学习模型后进行词嵌入训练</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split</span><br><span class="line">x_train, x_test, y_train, y_test = train_test_split(data[<span class="string">&#x27;text&#x27;</span>].iloc[:],\</span><br><span class="line">                                       data_label, test_size = <span class="number">0.2</span>, \</span><br><span class="line">                                                    random_state = <span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 对数据集进行编码</span></span><br><span class="line">max_features = <span class="number">200</span></span><br><span class="line">max_len = <span class="number">150</span></span><br><span class="line">embed_size = <span class="number">100</span></span><br><span class="line">batch_size = <span class="number">64</span></span><br><span class="line">epochs = <span class="number">5</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># import os</span></span><br><span class="line"><span class="comment"># os.environ[&#x27;KERAS_BACKEND&#x27;] = &#x27;theano&#x27;</span></span><br><span class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</span><br><span class="line"><span class="comment"># from keras.preprocessing.text import Tokenizer</span></span><br><span class="line"><span class="comment"># from keras.preprocessing import sequence</span></span><br><span class="line"></span><br><span class="line">tokens = Tokenizer(num_words = max_features)</span><br><span class="line">tokens.fit_on_texts(<span class="built_in">list</span>(x_train) + <span class="built_in">list</span>(x_test))</span><br><span class="line"></span><br><span class="line">x_sub_train = tokens.texts_to_sequences(x_train)</span><br><span class="line">x_sub_test = tokens.texts_to_sequences(x_test)</span><br><span class="line"></span><br><span class="line">x_sub_train = sequence.pad_sequences(x_sub_train, maxlen = max_len)</span><br><span class="line">x_sub_test = sequence.pad_sequences(x_sub_test, maxlen = max_len)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># LSTM model # Keras Layers: from keras.layers import Dense,Input,LSTM,Bidirectional,Activation,Conv1D,GRU from keras.layers import Dropout,Embedding,GlobalMaxPooling1D, MaxPooling1D, Add, Flatten from keras.layers import GlobalAveragePooling1D, GlobalMaxPooling1D, concatenate, SpatialDropout1D# Keras Callback Functions: from keras.callbacks import Callback from keras.callbacks import EarlyStopping,ModelCheckpoint from keras import initializers, regularizers, constraints, optimizers, layers, callbacks from keras.models import Model from keras.optimizers import Adam</span></span><br><span class="line"> </span><br><span class="line">sequence_input = Input(shape=(max_len, )) </span><br><span class="line">x = Embedding(max_features, embed_size,trainable = <span class="literal">False</span>)(sequence_input)</span><br><span class="line">x = SpatialDropout1D(<span class="number">0.2</span>)(x) x = Bidirectional(GRU(<span class="number">128</span>, return_sequences=<span class="literal">True</span>,dropout=<span class="number">0.1</span>,recurrent_dropout=<span class="number">0.1</span>))(x) </span><br><span class="line">x = Conv1D(<span class="number">64</span>, kernel_size = <span class="number">3</span>, padding = <span class="string">&quot;valid&quot;</span>, kernel_initializer = <span class="string">&quot;glorot_uniform&quot;</span>)(x) </span><br><span class="line">avg_pool = GlobalAveragePooling1D()(x) max_pool = GlobalMaxPooling1D()(x) x = concatenate([avg_pool, max_pool]) </span><br><span class="line">preds = Dense(<span class="number">20</span>, activation=<span class="string">&quot;sigmoid&quot;</span>)(x)</span><br><span class="line"> </span><br><span class="line">model = Model(sequence_input, preds) </span><br><span class="line">model.<span class="built_in">compile</span>(loss=<span class="string">&#x27;binary_crossentropy&#x27;</span>,optimizer=Adam(lr=<span class="number">1e-3</span>),metrics= [<span class="string">&#x27;accuracy&#x27;</span>]) model.fit(x_sub_train, y_train, batch_size=batch_size, epochs=epochs)</span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/22/Task4/" data-id="ckk8fov5v0004ocu5g0iyh3iw" data-title="The TASK4" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Task3" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/01/19/Task3/" class="article-date">
@@ -93,15 +648,21 @@
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <h3 id="任务说明"><a href="#任务说明" class="headerlink" title="任务说明"></a>任务说明</h3><hr>
+        
+        <h3 id="任务说明"   >
+          <a href="#任务说明" class="heading-link"><i class="fas fa-link"></i></a>任务说明</h3>
+      <hr>
 <ul>
 <li><code>任务主题：</code>论⽂文代码统计，统计所有论⽂文出现代码的相关统计； </li>
 <li><code>任务内容：</code>使⽤用正则表达式统计代码连接、⻚页数和图表数据； </li>
 <li><code>任务成果：</code>学习正则表达式统计；</li>
 </ul>
-<h3 id="预备知识—正则表达式"><a href="#预备知识—正则表达式" class="headerlink" title="预备知识—正则表达式"></a>预备知识—正则表达式</h3><hr>
+
+        <h3 id="预备知识—正则表达式"   >
+          <a href="#预备知识—正则表达式" class="heading-link"><i class="fas fa-link"></i></a>预备知识—正则表达式</h3>
+      <hr>
 <p>普通字符:大小写字母,数字,所有标点,一些特殊字符  </p>
-<table>
+<div class="table-container"><table>
 <thead>
 <tr>
 <th>字符</th>
@@ -132,10 +693,10 @@
 <td>\w</td>
 <td>匹配字母、数字、下划线。等价于 [A-Za-z0-9_]</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <p>特殊字符</p>
-<table>
+<div class="table-container"><table>
 <thead>
 <tr>
 <th>特 别 字 符</th>
@@ -182,10 +743,10 @@
 <td>|</td>
 <td>指明两项之间的一个选择。要匹配 |，请使用 |。</td>
 </tr>
-</tbody></table>
+</tbody></table></div>
 <hr>
 <p>限定符  </p>
-<table>
+<div class="table-container"><table>
 <thead>
 <tr>
 <th>字符</th>
@@ -216,12 +777,15 @@
 <td>{n,m}</td>
 <td>m 和 n 均为⾮非负整数，其中n &lt;= m。少匹配 n 次且多匹配 m 次。例例如，”o{1,3}” 将匹配 “fooooood” 中的前三个 o。’o{0,1}’ 等价于 ‘o?’。请注意在逗号和两个数之间不能有空格。</td>
 </tr>
-</tbody></table>
-<h3 id="任务1初始化数据"><a href="#任务1初始化数据" class="headerlink" title="任务1初始化数据"></a>任务1初始化数据</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#日常导包</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> seaborn</span><br></pre></td></tr></table></figure>
+</tbody></table></div>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> idx, line <span class="keyword">in</span> <span class="built_in">enumerate</span>(f):</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123; <span class="string">&#x27;abstract&#x27;</span> : d[<span class="string">&#x27;abstract&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;comments&#x27;</span> : d[<span class="string">&#x27;comments&#x27;</span>] &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></figure>
+        <h3 id="任务1初始化数据"   >
+          <a href="#任务1初始化数据" class="heading-link"><i class="fas fa-link"></i></a>任务1初始化数据</h3>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#日常导包</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> seaborn</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data </span><br><span class="line"><span class="comment">#观察数据发现,部分论文有描述没有页数</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> idx, line <span class="keyword">in</span> <span class="built_in">enumerate</span>(f):</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123; <span class="string">&#x27;abstract&#x27;</span> : d[<span class="string">&#x27;abstract&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;comments&#x27;</span> : d[<span class="string">&#x27;comments&#x27;</span>] &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></div></figure>
+
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data </span><br><span class="line"><span class="comment">#观察数据发现,部分论文有描述没有页数</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -239,7 +803,7 @@
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -316,25 +880,28 @@
       <td>12 pages including 8 eps figs, LaTeX with jpsj...</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>1796911 rows × 3 columns</p>
 </div>
 
 
 
-<h3 id="任务2数据处理"><a href="#任务2数据处理" class="headerlink" title="任务2数据处理"></a>任务2数据处理</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">type</span>(data[<span class="string">&#x27;comments&#x27;</span>])</span><br></pre></td></tr></table></figure>
+
+        <h3 id="任务2数据处理"   >
+          <a href="#任务2数据处理" class="heading-link"><i class="fas fa-link"></i></a>任务2数据处理</h3>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">type</span>(data[<span class="string">&#x27;comments&#x27;</span>])</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>pandas.core.series.Series</code></pre>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;pages&#x27;</span>] = data[<span class="string">&#x27;comments&#x27;</span>].apply(<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* pages&#x27;</span>, <span class="built_in">str</span>(x)))</span><br><span class="line"><span class="comment">#findall()直接将得到pages</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;pages&#x27;</span>] = data[<span class="string">&#x27;comments&#x27;</span>].apply(<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* pages&#x27;</span>, <span class="built_in">str</span>(x)))</span><br><span class="line"><span class="comment">#findall()直接将得到pages</span></span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#re.find()用法如下</span></span><br><span class="line">str_1 = <span class="string">&#x27;123 pages asdfasdfdfkxcvlkxnzclmlkamsfkmadsf asjdfajopsjpxnzpvnpzxv&#x27;</span></span><br><span class="line">x = (<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* pages&#x27;</span>, x))(str_1)</span><br><span class="line">x</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#re.find()用法如下</span></span><br><span class="line">str_1 = <span class="string">&#x27;123 pages asdfasdfdfkxcvlkxnzclmlkamsfkmadsf asjdfajopsjpxnzpvnpzxv&#x27;</span></span><br><span class="line">x = (<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* pages&#x27;</span>, x))(str_1)</span><br><span class="line">x</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>[&#39;123 pages&#39;]</code></pre>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -352,7 +919,7 @@
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -441,16 +1008,16 @@
       <td>[12 pages]</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>1796911 rows × 4 columns</p>
 </div>
 
 
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data = data[data[<span class="string">&#x27;pages&#x27;</span>].apply(<span class="built_in">len</span>) &gt; <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">data[<span class="string">&#x27;pages&#x27;</span>] = data[<span class="string">&#x27;pages&#x27;</span>].apply(<span class="keyword">lambda</span> x : <span class="built_in">float</span>(x[<span class="number">0</span>].replace(<span class="string">&#x27; pages&#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data = data[data[<span class="string">&#x27;pages&#x27;</span>].apply(<span class="built_in">len</span>) &gt; <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">data[<span class="string">&#x27;pages&#x27;</span>] = data[<span class="string">&#x27;pages&#x27;</span>].apply(<span class="keyword">lambda</span> x : <span class="built_in">float</span>(x[<span class="number">0</span>].replace(<span class="string">&#x27; pages&#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;pages&#x27;</span>].describe().astype(<span class="built_in">int</span>)</span><br><span class="line"><span class="comment">#.astype(类型a)以类型a进行执行</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&#x27;pages&#x27;</span>].describe().astype(<span class="built_in">int</span>)</span><br><span class="line"><span class="comment">#.astype(类型a)以类型a进行执行</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -463,7 +1030,7 @@ min            1
 75%           22
 max        11232
 Name: pages, dtype: int32</code></pre>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -481,7 +1048,7 @@ Name: pages, dtype: int32</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -570,14 +1137,14 @@ Name: pages, dtype: int32</code></pre>
       <td>12.0</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>1089180 rows × 4 columns</p>
 </div>
 
 
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#选择主要类别</span></span><br><span class="line">data[<span class="string">&#x27;categories&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27; &#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"><span class="comment">#多个类别筛选出第一个类别</span></span><br><span class="line">data[<span class="string">&#x27;categories&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"><span class="comment">#第一类别中选出主要类别</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#柱状图显示各类论文平均数目</span></span><br><span class="line">plt.figure(figsize = (<span class="number">12</span>, <span class="number">6</span>))</span><br><span class="line">data.groupby([<span class="string">&#x27;categories&#x27;</span>])[<span class="string">&#x27;pages&#x27;</span>].mean().plot(kind = <span class="string">&#x27;bar&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#选择主要类别</span></span><br><span class="line">data[<span class="string">&#x27;categories&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27; &#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"><span class="comment">#多个类别筛选出第一个类别</span></span><br><span class="line">data[<span class="string">&#x27;categories&#x27;</span>] = data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27;.&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"><span class="comment">#第一类别中选出主要类别</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#柱状图显示各类论文平均数目</span></span><br><span class="line">plt.figure(figsize = (<span class="number">12</span>, <span class="number">6</span>))</span><br><span class="line">data.groupby([<span class="string">&#x27;categories&#x27;</span>])[<span class="string">&#x27;pages&#x27;</span>].mean().plot(kind = <span class="string">&#x27;bar&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -586,12 +1153,15 @@ Name: pages, dtype: int32</code></pre>
 <img src="/2021/01/19/Task3/output_15_1.png" class="">
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#对论文指数执行相同处理</span></span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;comments&#x27;</span>]\</span><br><span class="line">    .apply(<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* figures&#x27;</span>, <span class="built_in">str</span>(x)))</span><br><span class="line"><span class="comment">#lambda表达式中不要用\回车进行分割</span></span><br><span class="line">data = data[data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="built_in">len</span>) &gt; <span class="number">0</span>]</span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="keyword">lambda</span> x : <span class="built_in">float</span>(x[<span class="number">0</span>].replace(<span class="string">&#x27; figures&#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br></pre></td></tr></table></figure>
-<h3 id="任务3有效信息处理"><a href="#任务3有效信息处理" class="headerlink" title="任务3有效信息处理"></a>任务3有效信息处理</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(pd.__version__)</span><br></pre></td></tr></table></figure>
-<pre><code>1.0.5</code></pre>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#目标:找到所有含有github的论文,整理出github地址,并且用图表显示信息</span></span><br><span class="line">data_with_code = data[</span><br><span class="line">    (data.comments.<span class="built_in">str</span>.contains(<span class="string">&#x27;github&#x27;</span>) == <span class="literal">True</span>)|\</span><br><span class="line">    (data.abstract.<span class="built_in">str</span>.contains(<span class="string">&#x27;github&#x27;</span> )== <span class="literal">True</span>)   </span><br><span class="line">]</span><br><span class="line"><span class="comment">#首先筛选所有含有github的项</span></span><br><span class="line">pd.set_option(<span class="string">&#x27;mode.chained_assignment&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line"><span class="comment">#这里关闭了警告⚠</span></span><br><span class="line"></span><br><span class="line">data_with_code[<span class="string">&#x27;text&#x27;</span>] = data_with_code[<span class="string">&#x27;abstract&#x27;</span>].fillna(<span class="string">&#x27;&#x27;</span>) + data_with_code[<span class="string">&#x27;comments&#x27;</span>].fillna(<span class="string">&#x27;&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#正则表达式匹配论文</span></span><br><span class="line">pattern = <span class="string">&#x27;[a-zA-Z]+://github[^\s]*&#x27;</span></span><br><span class="line"><span class="comment">#书写模式串</span></span><br><span class="line">data_with_code[<span class="string">&#x27;code_flag&#x27;</span>] = data_with_code[<span class="string">&#x27;text&#x27;</span>].<span class="built_in">str</span>.findall(pattern).apply(<span class="built_in">len</span>)</span><br><span class="line"><span class="comment">#code_flag表示github链接数量</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#对论文指数执行相同处理</span></span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;comments&#x27;</span>]\</span><br><span class="line">    .apply(<span class="keyword">lambda</span> x: re.findall(<span class="string">&#x27;[1-9][0-9]* figures&#x27;</span>, <span class="built_in">str</span>(x)))</span><br><span class="line"><span class="comment">#lambda表达式中不要用\回车进行分割</span></span><br><span class="line">data = data[data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="built_in">len</span>) &gt; <span class="number">0</span>]</span><br><span class="line">data[<span class="string">&#x27;figures&#x27;</span>] = data[<span class="string">&#x27;figures&#x27;</span>].apply(<span class="keyword">lambda</span> x : <span class="built_in">float</span>(x[<span class="number">0</span>].replace(<span class="string">&#x27; figures&#x27;</span>, <span class="string">&#x27;&#x27;</span>)))</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#生成图表</span></span><br><span class="line">data_with_code = data_with_code[data_with_code[<span class="string">&quot;code_flag&quot;</span>] &gt;= <span class="number">1</span>]</span><br><span class="line">plt.figure(figsize = (<span class="number">12</span>, <span class="number">6</span>))</span><br><span class="line">data_with_code.groupby([<span class="string">&#x27;categories&#x27;</span>])[<span class="string">&#x27;code_flag&#x27;</span>].count().plot(kind = <span class="string">&#x27;bar&#x27;</span>)</span><br></pre></td></tr></table></figure>
+        <h3 id="任务3有效信息处理"   >
+          <a href="#任务3有效信息处理" class="heading-link"><i class="fas fa-link"></i></a>任务3有效信息处理</h3>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">print(pd.__version__)</span><br></pre></td></tr></table></div></figure>
+<pre><code>1.0.5</code></pre>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#目标:找到所有含有github的论文,整理出github地址,并且用图表显示信息</span></span><br><span class="line">data_with_code = data[</span><br><span class="line">    (data.comments.<span class="built_in">str</span>.contains(<span class="string">&#x27;github&#x27;</span>) == <span class="literal">True</span>)|\</span><br><span class="line">    (data.abstract.<span class="built_in">str</span>.contains(<span class="string">&#x27;github&#x27;</span> )== <span class="literal">True</span>)   </span><br><span class="line">]</span><br><span class="line"><span class="comment">#首先筛选所有含有github的项</span></span><br><span class="line">pd.set_option(<span class="string">&#x27;mode.chained_assignment&#x27;</span>, <span class="literal">None</span>)</span><br><span class="line"><span class="comment">#这里关闭了警告⚠</span></span><br><span class="line"></span><br><span class="line">data_with_code[<span class="string">&#x27;text&#x27;</span>] = data_with_code[<span class="string">&#x27;abstract&#x27;</span>].fillna(<span class="string">&#x27;&#x27;</span>) + data_with_code[<span class="string">&#x27;comments&#x27;</span>].fillna(<span class="string">&#x27;&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#正则表达式匹配论文</span></span><br><span class="line">pattern = <span class="string">&#x27;[a-zA-Z]+://github[^\s]*&#x27;</span></span><br><span class="line"><span class="comment">#书写模式串</span></span><br><span class="line">data_with_code[<span class="string">&#x27;code_flag&#x27;</span>] = data_with_code[<span class="string">&#x27;text&#x27;</span>].<span class="built_in">str</span>.findall(pattern).apply(<span class="built_in">len</span>)</span><br><span class="line"><span class="comment">#code_flag表示github链接数量</span></span><br></pre></td></tr></table></div></figure>
+
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#生成图表</span></span><br><span class="line">data_with_code = data_with_code[data_with_code[<span class="string">&quot;code_flag&quot;</span>] &gt;= <span class="number">1</span>]</span><br><span class="line">plt.figure(figsize = (<span class="number">12</span>, <span class="number">6</span>))</span><br><span class="line">data_with_code.groupby([<span class="string">&#x27;categories&#x27;</span>])[<span class="string">&#x27;code_flag&#x27;</span>].count().plot(kind = <span class="string">&#x27;bar&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -601,17 +1171,20 @@ Name: pages, dtype: int32</code></pre>
 
 
 
-<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><hr>
+
+        <h3 id="总结"   >
+          <a href="#总结" class="heading-link"><i class="fas fa-link"></i></a>总结</h3>
+      <hr>
 <ul>
 <li>想利用github page搭建私人博客</li>
 <li>python写的更溜了</li>
 <li>打算制作bug文档</li>
 </ul>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></div></figure>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task3/" data-id="ckk44t97w00001su53kidgy7w" data-title="The TASK3" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task3/" data-id="ckk8fov5f0001ocu5cfzf6pv8" data-title="The TASK3" class="article-share-link">Share</a>
       
       
       
@@ -649,12 +1222,15 @@ Name: pages, dtype: int32</code></pre>
 <p>DW21期数据分析方向</p>
 </blockquote>
 <p><code>任务主题：</code>论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；<br /><br><code>任务内容：</code>论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； <br /><br><code>任务成果：</code>学习 Pandas 的字符串串操作</p>
-<h3 id="知识前导"><a href="#知识前导" class="headerlink" title="知识前导"></a>知识前导</h3><ol>
+
+        <h3 id="知识前导"   >
+          <a href="#知识前导" class="heading-link"><i class="fas fa-link"></i></a>知识前导</h3>
+      <ol>
 <li><p>数据处理</p>
 <p> python调用print(‘字符串’)检查转义字符<br> print(r”字符串”)停止检查  </p>
 </li>
 <li><p>字符处理</p>
-<p> 说白了就是切分字符串,建议访问<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lvtaohome/p/11215954.html">https://www.cnblogs.com/lvtaohome/p/11215954.html</a>  </p>
+<p> 说白了就是切分字符串,建议访问<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/lvtaohome/p/11215954.html" >https://www.cnblogs.com/lvtaohome/p/11215954.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>  </p>
 </li>
 <li><p>markdown换行技巧<br> 空两格回车,快速普通换行</p>
 <p> 两下回车段落式换行  </p>
@@ -666,13 +1242,25 @@ Name: pages, dtype: int32</code></pre>
 <p> 必须夸夸<code>python</code>,比<code>C++</code>啥的强太多了,基本上你都不需要写函数,只需要明白这个函数能干啥,正确的参数是啥.</p>
 </li>
 </ol>
-<h3 id="练习部分补充代码"><a href="#练习部分补充代码" class="headerlink" title="练习部分补充代码"></a>练习部分补充代码</h3><h2 id="勘误-原文2-3字符串处理有一个例子"><a href="#勘误-原文2-3字符串处理有一个例子" class="headerlink" title="勘误:原文2.3字符串处理有一个例子"></a><strong>勘误:原文2.3字符串处理有一个例子</strong></h2><p>print(“var2 <strong>[1:5]</strong>: “, var2 <strong>[0:7]</strong>)<br>代码切的是a部分,结果输出了b部分,很容易误导新手</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下时字符串切片的补充代码,可以略过</span></span><br><span class="line">var1 = <span class="string">&#x27;I\&#x27;m a handsome boy.&#x27;</span></span><br><span class="line">var2 = <span class="string">&#x27;Why i am so smart?&#x27;</span></span><br><span class="line"><span class="comment">#请略过我自恋部分</span></span><br><span class="line"></span><br><span class="line">print(var1[-<span class="number">13</span>:])</span><br><span class="line">print(var2[-<span class="number">6</span>:-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+
+        <h3 id="练习部分补充代码"   >
+          <a href="#练习部分补充代码" class="heading-link"><i class="fas fa-link"></i></a>练习部分补充代码</h3>
+      
+        <h2 id="勘误-原文2-3字符串处理有一个例子"   >
+          <a href="#勘误-原文2-3字符串处理有一个例子" class="heading-link"><i class="fas fa-link"></i></a>勘误:原文2.3字符串处理有一个例子</h2>
+      <p>print(“var2 <strong>[1:5]</strong>: “, var2 <strong>[0:7]</strong>)<br>代码切的是a部分,结果输出了b部分,很容易误导新手</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下时字符串切片的补充代码,可以略过</span></span><br><span class="line">var1 = <span class="string">&#x27;I\&#x27;m a handsome boy.&#x27;</span></span><br><span class="line">var2 = <span class="string">&#x27;Why i am so smart?&#x27;</span></span><br><span class="line"><span class="comment">#请略过我自恋部分</span></span><br><span class="line"></span><br><span class="line">print(var1[-<span class="number">13</span>:])</span><br><span class="line">print(var2[-<span class="number">6</span>:-<span class="number">1</span>])</span><br></pre></td></tr></table></div></figure>
 <pre><code>handsome boy.
 smart</code></pre>
-<h2 id="任务1日常搭建环境"><a href="#任务1日常搭建环境" class="headerlink" title="任务1日常搭建环境"></a>任务1日常搭建环境</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#写程序第一件事干什么,相信不用我再说了吧</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns </span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="comment"># win10只能安装BeautifulSoup4,并且导包的时候必须从bs4中导入</span></span><br></pre></td></tr></table></figure>
+
+        <h2 id="任务1日常搭建环境"   >
+          <a href="#任务1日常搭建环境" class="heading-link"><i class="fas fa-link"></i></a>任务1日常搭建环境</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#写程序第一件事干什么,相信不用我再说了吧</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns </span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="comment"># win10只能安装BeautifulSoup4,并且导包的时候必须从bs4中导入</span></span><br></pre></td></tr></table></div></figure>
 <blockquote>
-<h2 id="对原文改进"><a href="#对原文改进" class="headerlink" title="对原文改进"></a>对原文改进</h2></blockquote>
+
+        <h2 id="对原文改进"   >
+          <a href="#对原文改进" class="heading-link"><i class="fas fa-link"></i></a>对原文改进</h2>
+      </blockquote>
 <hr>
 <pre><code>data = [] with open(&quot;arxiv-metadata-oai-snapshot.json&quot;, &#39;r&#39;) as f:     
     for **idx,** line in **enumerate(f)**:         
@@ -683,9 +1271,9 @@ smart</code></pre>
         data = pd.DataFrame(data) </code></pre>
 <hr>
 <p>我想说明的是<strong>第二行不用enumrate函数照样能用,而且减少了多余的操作</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123;<span class="string">&#x27;authors&#x27;</span> : d[<span class="string">&#x27;authors&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;authors_parsed&#x27;</span> : d[<span class="string">&#x27;authors_parsed&#x27;</span>]  &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123;<span class="string">&#x27;authors&#x27;</span> : d[<span class="string">&#x27;authors&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;authors_parsed&#x27;</span> : d[<span class="string">&#x27;authors_parsed&#x27;</span>]  &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -703,7 +1291,7 @@ smart</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -780,23 +1368,32 @@ smart</code></pre>
       <td>[[Enomoto, Naoki, , Okayama Univ.], [Ichioka, ...</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>1796911 rows × 3 columns</p>
 </div>
 
 
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#实验enumrate()功能</span></span><br><span class="line"><span class="comment">#返回[(0, 信息1), (1, 信息2), (2, 信息3)]</span></span><br><span class="line"><span class="comment">#具体请参考[手册](https://www.runoob.com/python/python-func-enumerate.html)</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    a = <span class="built_in">list</span>(<span class="built_in">enumerate</span>(f))</span><br><span class="line"><span class="comment"># 请自行执行代码 a  进行查看 </span></span><br></pre></td></tr></table></figure>
-<h2 id="任务2数据处理"><a href="#任务2数据处理" class="headerlink" title="任务2数据处理"></a>任务2数据处理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#又到了很抓的数据处理环节</span></span><br><span class="line"><span class="comment">#选择cs.CV下的论文</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">apply算是进阶的条件表达式,检测数据是否满足apply中的函数</span></span><br><span class="line"><span class="string">请参考[csdn博客](https://blog.csdn.net/starmoth/article/details/86323026)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">data2 = data[data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: <span class="string">&#x27;cs.CV&#x27;</span> <span class="keyword">in</span> x)]</span><br><span class="line">all_authors = <span class="built_in">sum</span>(data2[<span class="string">&#x27;authors_parsed&#x27;</span>], []) <span class="comment">#将所有元素整合成大list</span></span><br><span class="line"><span class="comment"># all_authors</span></span><br><span class="line"><span class="comment">#偷偷瞄一眼数据</span></span><br></pre></td></tr></table></figure>
-<h4 id="主线1用直方图列出19年以来发表数最多的10人"><a href="#主线1用直方图列出19年以来发表数最多的10人" class="headerlink" title="主线1用直方图列出19年以来发表数最多的10人"></a>主线1用直方图列出19年以来发表数最多的10人</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">author_names = [<span class="string">&#x27; &#x27;</span>.join(x) <span class="keyword">for</span> x <span class="keyword">in</span> all_authors] <span class="comment">#join()链接函数</span></span><br><span class="line">author_names = pd.DataFrame(author_names)</span><br><span class="line"></span><br><span class="line"><span class="comment">#绘制直方图</span></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>)) <span class="comment">#设置幕布大小</span></span><br><span class="line">temp_val = author_names[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># names = author_names[0].value_counts().index.values[:10]</span></span><br><span class="line"><span class="comment"># _ = plt.yticks(range(0, len(names)), names)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    上面注释这两端文字不知道有什么用</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#实验enumrate()功能</span></span><br><span class="line"><span class="comment">#返回[(0, 信息1), (1, 信息2), (2, 信息3)]</span></span><br><span class="line"><span class="comment">#具体请参考[手册](https://www.runoob.com/python/python-func-enumerate.html)</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    a = <span class="built_in">list</span>(<span class="built_in">enumerate</span>(f))</span><br><span class="line"><span class="comment"># 请自行执行代码 a  进行查看 </span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="任务2数据处理"   >
+          <a href="#任务2数据处理" class="heading-link"><i class="fas fa-link"></i></a>任务2数据处理</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#又到了很抓的数据处理环节</span></span><br><span class="line"><span class="comment">#选择cs.CV下的论文</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">apply算是进阶的条件表达式,检测数据是否满足apply中的函数</span></span><br><span class="line"><span class="string">请参考[csdn博客](https://blog.csdn.net/starmoth/article/details/86323026)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">data2 = data[data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: <span class="string">&#x27;cs.CV&#x27;</span> <span class="keyword">in</span> x)]</span><br><span class="line">all_authors = <span class="built_in">sum</span>(data2[<span class="string">&#x27;authors_parsed&#x27;</span>], []) <span class="comment">#将所有元素整合成大list</span></span><br><span class="line"><span class="comment"># all_authors</span></span><br><span class="line"><span class="comment">#偷偷瞄一眼数据</span></span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="主线1用直方图列出19年以来发表数最多的10人"   >
+          <a href="#主线1用直方图列出19年以来发表数最多的10人" class="heading-link"><i class="fas fa-link"></i></a>主线1用直方图列出19年以来发表数最多的10人</h4>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">author_names = [<span class="string">&#x27; &#x27;</span>.join(x) <span class="keyword">for</span> x <span class="keyword">in</span> all_authors] <span class="comment">#join()链接函数</span></span><br><span class="line">author_names = pd.DataFrame(author_names)</span><br><span class="line"></span><br><span class="line"><span class="comment">#绘制直方图</span></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>)) <span class="comment">#设置幕布大小</span></span><br><span class="line">temp_val = author_names[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># names = author_names[0].value_counts().index.values[:10]</span></span><br><span class="line"><span class="comment"># _ = plt.yticks(range(0, len(names)), names)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    上面注释这两端文字不知道有什么用</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>Text(0.5, 0, &#39;Count&#39;)</code></pre>
 <p><img src="output_18_1.png" alt="png"></p>
 <blockquote>
-<h2 id="对原文改进-1"><a href="#对原文改进-1" class="headerlink" title="对原文改进"></a>对原文改进</h2></blockquote>
+
+        <h2 id="对原文改进-1"   >
+          <a href="#对原文改进-1" class="heading-link"><i class="fas fa-link"></i></a>对原文改进</h2>
+      </blockquote>
 <hr>
 <p>原文  </p>
 <pre><code> authors_lastnames = [x[0] for x in all_authors]   
@@ -808,13 +1405,19 @@ smart</code></pre>
 <pre><code> plt.ylabel(&#39;Author&#39;) plt.xlabel(&#39;Count&#39;)  </code></pre>
 <hr>
 <p>我想说明的是<strong>不用加粗无缩进的两行照样能用</strong><br>我不清楚这两行的意义在哪里,后面根本没有调用names和_</p>
-<h4 id="主线2直方图列出发表数最多10人的姓"><a href="#主线2直方图列出发表数最多10人的姓" class="headerlink" title="主线2直方图列出发表数最多10人的姓"></a>主线2直方图列出发表数最多10人的姓</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">author_lastnames = [x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> all_authors]</span><br><span class="line"><span class="comment">#all_authors是以人为行,姓名为列的二维数组</span></span><br><span class="line">author_lastnames = pd.DataFrame(author_lastnames)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">author_lastnames[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+        <h4 id="主线2直方图列出发表数最多10人的姓"   >
+          <a href="#主线2直方图列出发表数最多10人的姓" class="heading-link"><i class="fas fa-link"></i></a>主线2直方图列出发表数最多10人的姓</h4>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">author_lastnames = [x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> all_authors]</span><br><span class="line"><span class="comment">#all_authors是以人为行,姓名为列的二维数组</span></span><br><span class="line">author_lastnames = pd.DataFrame(author_lastnames)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">author_lastnames[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>Text(0.5, 0, &#39;Count&#39;)</code></pre>
 <p><img src="output_18_1.png" alt="png"></p>
-<h3 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h3><blockquote>
+
+        <h3 id="感悟"   >
+          <a href="#感悟" class="heading-link"><i class="fas fa-link"></i></a>感悟</h3>
+      <blockquote>
 <ol>
 <li>使用markdown更得心应手了  </li>
 <li>基本上流程懂了</li>
@@ -827,7 +1430,7 @@ smart</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk44t98c00011su5ezkyd58f" data-title="The TASK2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk8fov5f0000ocu5b1r0h2yl" data-title="The TASK2" class="article-share-link">Share</a>
       
       
       
@@ -861,7 +1464,7 @@ smart</code></pre>
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p><code>简介:</code> DW第21期数据分析方向–目标15天内完成小型论文分析项目 <br /><br><code>目标:</code> 论⽂文数量量统计（数据统计任务）：统计2019年年全年年，计算机各个⽅方向论⽂文数量量；<br /><br><code>数据集:</code>  <a target="_blank" rel="noopener" href="https://www.kaggle.com/Cornell-University/arxiv">https://www.kaggle.com/Cornell-University/arxiv</a></p>
+        <p><code>简介:</code> DW第21期数据分析方向–目标15天内完成小型论文分析项目 <br /><br><code>目标:</code> 论⽂文数量量统计（数据统计任务）：统计2019年年全年年，计算机各个⽅方向论⽂文数量量；<br /><br><code>数据集:</code>  <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://www.kaggle.com/Cornell-University/arxiv" >https://www.kaggle.com/Cornell-University/arxiv</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
 <blockquote>
 <p>数据集的格式如下： <br /></p>
 </blockquote>
@@ -872,7 +1475,7 @@ smart</code></pre>
 <li>title：论⽂文标题； <br /></li>
 <li>comments：论⽂文⻚页数和图表等其他信息； <br /></li>
 <li>journal-ref：论⽂文发表的期刊的信息； <br /></li>
-<li>doi：数字对象标识符，<a target="_blank" rel="noopener" href="https://www.doi.org;/">https://www.doi.org；</a><br /></li>
+<li>doi：数字对象标识符，<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://www.doi.org;/" >https://www.doi.org；</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span><br /></li>
 <li>report-no：报告编号； <br /></li>
 <li>categories：论⽂文在 arXiv 系统的所属类别或标签； <br /></li>
 <li>license：⽂文章的许可证； <br /></li>
@@ -880,20 +1483,26 @@ smart</code></pre>
 <li>versions：论⽂文版本； <br /></li>
 <li>authors_parsed：作者的信息。 </li>
 </ul>
-<h2 id="任务1搭建环境"><a href="#任务1搭建环境" class="headerlink" title="任务1搭建环境"></a>任务1搭建环境</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns <span class="comment">#⽤用于画图 </span></span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="comment">#⽤用于爬取arxiv的数据 </span></span><br><span class="line"><span class="keyword">import</span> re <span class="comment">#⽤用于正则表达式，匹配字符串串的模式 </span></span><br><span class="line"><span class="keyword">import</span> requests <span class="comment">#⽤用于⽹网络连接，发送⽹网络请求，使⽤用域名获取对应信息 </span></span><br><span class="line"><span class="keyword">import</span> json <span class="comment">#读取数据，我们的数据为json格式的</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd <span class="comment">#数据处理理，数据分析 </span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt <span class="comment">#画图⼯工具</span></span><br><span class="line"><span class="keyword">import</span> os <span class="comment">#读取文件</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data  = [] <span class="comment">#初始化 </span></span><br><span class="line"><span class="comment">#使⽤用with语句句优势：1.自动关闭文件句句柄；2.自动显示（处理理）文件读取数据异常 </span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:     </span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:         </span><br><span class="line">        data.append(json.loads(line))  </span><br><span class="line">        </span><br><span class="line">data = pd.DataFrame(data) <span class="comment">#将list变为dataframe格式，方便使用pandas进⾏分析 </span></span><br><span class="line">data.shape <span class="comment">#显示数据⼤⼩</span></span><br></pre></td></tr></table></figure>
+        <h2 id="任务1搭建环境"   >
+          <a href="#任务1搭建环境" class="heading-link"><i class="fas fa-link"></i></a>任务1搭建环境</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns <span class="comment">#⽤用于画图 </span></span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="comment">#⽤用于爬取arxiv的数据 </span></span><br><span class="line"><span class="keyword">import</span> re <span class="comment">#⽤用于正则表达式，匹配字符串串的模式 </span></span><br><span class="line"><span class="keyword">import</span> requests <span class="comment">#⽤用于⽹网络连接，发送⽹网络请求，使⽤用域名获取对应信息 </span></span><br><span class="line"><span class="keyword">import</span> json <span class="comment">#读取数据，我们的数据为json格式的</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd <span class="comment">#数据处理理，数据分析 </span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt <span class="comment">#画图⼯工具</span></span><br><span class="line"><span class="keyword">import</span> os <span class="comment">#读取文件</span></span><br><span class="line"></span><br></pre></td></tr></table></div></figure>
+
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data  = [] <span class="comment">#初始化 </span></span><br><span class="line"><span class="comment">#使⽤用with语句句优势：1.自动关闭文件句句柄；2.自动显示（处理理）文件读取数据异常 </span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:     </span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:         </span><br><span class="line">        data.append(json.loads(line))  </span><br><span class="line">        </span><br><span class="line">data = pd.DataFrame(data) <span class="comment">#将list变为dataframe格式，方便使用pandas进⾏分析 </span></span><br><span class="line">data.shape <span class="comment">#显示数据⼤⼩</span></span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>(1796911, 14)</code></pre>
-<h2 id="任务2数据处理"><a href="#任务2数据处理" class="headerlink" title="任务2数据处理"></a>任务2数据处理</h2><blockquote>
+
+        <h2 id="任务2数据处理"   >
+          <a href="#任务2数据处理" class="heading-link"><i class="fas fa-link"></i></a>任务2数据处理</h2>
+      <blockquote>
 <ol>
 <li>筛选出2019年及后的论文<br/></li>
 <li>从arxiv网站上爬取门类信息,填补原有data表 </li>
 </ol>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#双重循环的列表推导器读取每类科目</span></span><br><span class="line"><span class="comment">#set()去重</span></span><br><span class="line">unique_categories = <span class="built_in">set</span>([i <span class="keyword">for</span> l <span class="keyword">in</span> [x.split(<span class="string">&#x27; &#x27;</span>) <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">&quot;categories&quot;</span>]] <span class="keyword">for</span> i <span class="keyword">in</span> l]) </span><br><span class="line"><span class="built_in">len</span>(unique_categories), unique_categories</span><br><span class="line"><span class="comment">#查看数据</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#双重循环的列表推导器读取每类科目</span></span><br><span class="line"><span class="comment">#set()去重</span></span><br><span class="line">unique_categories = <span class="built_in">set</span>([i <span class="keyword">for</span> l <span class="keyword">in</span> [x.split(<span class="string">&#x27; &#x27;</span>) <span class="keyword">for</span> x <span class="keyword">in</span> data[<span class="string">&quot;categories&quot;</span>]] <span class="keyword">for</span> i <span class="keyword">in</span> l]) </span><br><span class="line"><span class="built_in">len</span>(unique_categories), unique_categories</span><br><span class="line"><span class="comment">#查看数据</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -920,7 +1529,7 @@ smart</code></pre>
   &#39;stat.OT&#39;,
   &#39;stat.TH&#39;,
   &#39;supr-con&#39;&#125;)</code></pre>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&quot;year&quot;</span>] = pd.to_datetime(data[<span class="string">&quot;update_date&quot;</span>]).dt.year </span><br><span class="line"><span class="comment">#将update_date从str变为datetime格式，并提取处year </span></span><br><span class="line"><span class="keyword">del</span> data[<span class="string">&quot;update_date&quot;</span>] </span><br><span class="line"><span class="comment">#删除 update_date特征，其使命已完成 </span></span><br><span class="line">data = data[data[<span class="string">&quot;year&quot;</span>] &gt;= <span class="number">2019</span>] </span><br><span class="line"><span class="comment">#找出 year 中2019年年以后的数据，并将其他数据覆盖 </span></span><br><span class="line">data.groupby([<span class="string">&#x27;categories&#x27;</span>,<span class="string">&#x27;year&#x27;</span>]) </span><br><span class="line"><span class="comment">#以 categories 进⾏行行排序，如果同⼀一个categories 相同则使⽤用 year 特征进⾏行行排序 </span></span><br><span class="line">data.reset_index(drop=<span class="literal">True</span>, inplace=<span class="literal">True</span>) <span class="comment">#重新编号 </span></span><br><span class="line">data <span class="comment">#查看结果</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">data[<span class="string">&quot;year&quot;</span>] = pd.to_datetime(data[<span class="string">&quot;update_date&quot;</span>]).dt.year </span><br><span class="line"><span class="comment">#将update_date从str变为datetime格式，并提取处year </span></span><br><span class="line"><span class="keyword">del</span> data[<span class="string">&quot;update_date&quot;</span>] </span><br><span class="line"><span class="comment">#删除 update_date特征，其使命已完成 </span></span><br><span class="line">data = data[data[<span class="string">&quot;year&quot;</span>] &gt;= <span class="number">2019</span>] </span><br><span class="line"><span class="comment">#找出 year 中2019年年以后的数据，并将其他数据覆盖 </span></span><br><span class="line">data.groupby([<span class="string">&#x27;categories&#x27;</span>,<span class="string">&#x27;year&#x27;</span>]) </span><br><span class="line"><span class="comment">#以 categories 进⾏行行排序，如果同⼀一个categories 相同则使⽤用 year 特征进⾏行行排序 </span></span><br><span class="line">data.reset_index(drop=<span class="literal">True</span>, inplace=<span class="literal">True</span>) <span class="comment">#重新编号 </span></span><br><span class="line">data <span class="comment">#查看结果</span></span><br><span class="line"></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -938,7 +1547,7 @@ smart</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1147,7 +1756,7 @@ smart</code></pre>
       <td>2019</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>395123 rows × 14 columns</p>
 </div>
 
@@ -1156,7 +1765,7 @@ smart</code></pre>
 <blockquote>
 <p>爬取页面源代码</p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># txt = &quot;&quot;</span></span><br><span class="line"><span class="comment"># path = &quot;.\html1.txt&quot;</span></span><br><span class="line"><span class="comment"># f = open(path,encoding=&#x27;utf-8&#x27;)</span></span><br><span class="line"><span class="comment"># txt = f.read()</span></span><br><span class="line"><span class="comment"># f.close()</span></span><br><span class="line"></span><br><span class="line">website_url = requests.get(<span class="string">&#x27;https://arxiv.org/category_taxonomy&#x27;</span>).text <span class="comment">#获取⽹网⻚页 的⽂文本数据 </span></span><br><span class="line">soup = BeautifulSoup(txt,<span class="string">&#x27;lxml&#x27;</span>) <span class="comment">#爬取数据，这⾥里里使⽤用lxml的解析器器，加速</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># txt = &quot;&quot;</span></span><br><span class="line"><span class="comment"># path = &quot;.\html1.txt&quot;</span></span><br><span class="line"><span class="comment"># f = open(path,encoding=&#x27;utf-8&#x27;)</span></span><br><span class="line"><span class="comment"># txt = f.read()</span></span><br><span class="line"><span class="comment"># f.close()</span></span><br><span class="line"></span><br><span class="line">website_url = requests.get(<span class="string">&#x27;https://arxiv.org/category_taxonomy&#x27;</span>).text <span class="comment">#获取⽹网⻚页 的⽂文本数据 </span></span><br><span class="line">soup = BeautifulSoup(txt,<span class="string">&#x27;lxml&#x27;</span>) <span class="comment">#爬取数据，这⾥里里使⽤用lxml的解析器器，加速</span></span><br></pre></td></tr></table></div></figure>
 <ul>
 <li><strong>对于难以访问外网的状况提供以下解决措施</strong>  <br /> </li>
 </ul>
@@ -1169,11 +1778,11 @@ f = open(path,encoding=&#39;utf-8&#39;)
 txt = f.read()
 f.close()</code></pre>
 <hr>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># soup #检查爬取过来的数据</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># soup #检查爬取过来的数据</span></span><br></pre></td></tr></table></div></figure>
 <blockquote>
 <p>对源代码进行整理,提取出所需列表</p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">root = soup.find(<span class="string">&#x27;div&#x27;</span>,&#123;<span class="string">&#x27;id&#x27;</span>:<span class="string">&#x27;category_taxonomy_list&#x27;</span>&#125;) <span class="comment">#找出 BeautifulSoup 对应 的标签⼊入⼝口 </span></span><br><span class="line">tags = root.find_all([<span class="string">&quot;h2&quot;</span>,<span class="string">&quot;h3&quot;</span>,<span class="string">&quot;h4&quot;</span>,<span class="string">&quot;p&quot;</span>], recursive=<span class="literal">True</span>) <span class="comment">#读取 tags</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#初始化 str 和 list 变量量 </span></span><br><span class="line">level_1_name = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_2_name = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_2_code = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_1_names = [] </span><br><span class="line">level_2_codes = [] </span><br><span class="line">level_2_names = [] </span><br><span class="line">level_3_codes = [] </span><br><span class="line">level_3_names = [] </span><br><span class="line">level_3_notes = []</span><br><span class="line"> </span><br><span class="line"><span class="comment">#进⾏行行 </span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> tags:    </span><br><span class="line">    <span class="keyword">if</span> t.name == <span class="string">&quot;h2&quot;</span>:        </span><br><span class="line">        level_1_name = t.text            </span><br><span class="line">        level_2_code = t.text        </span><br><span class="line">        level_2_name = t.text    </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;h3&quot;</span>:       </span><br><span class="line">        raw = t.text      </span><br><span class="line">        level_2_code = re.sub(<span class="string">r&quot;(.*)\((.*)\)&quot;</span>,<span class="string">r&quot;\2&quot;</span>,raw) <span class="comment">#正则表达式：模式字符串串： (.*)\((.*)\)；被替换字符串串&quot;\2&quot;；被处理理字符串串：raw       </span></span><br><span class="line">        level_2_name = re.sub(<span class="string">r&quot;(.*)\((.*)\)&quot;</span>,<span class="string">r&quot;\1&quot;</span>,raw)    </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;h4&quot;</span>:      </span><br><span class="line">        raw = t.text       </span><br><span class="line">        level_3_code = re.sub(<span class="string">r&quot;(.*) \((.*)\)&quot;</span>,<span class="string">r&quot;\1&quot;</span>,raw)     </span><br><span class="line">        level_3_name = re.sub(<span class="string">r&quot;(.*) \((.*)\)&quot;</span>,<span class="string">r&quot;\2&quot;</span>,raw)   </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;p&quot;</span>:        </span><br><span class="line">        notes = t.text        </span><br><span class="line">        level_1_names.append(level_1_name)      </span><br><span class="line">        level_2_names.append(level_2_name)  </span><br><span class="line">        level_2_codes.append(level_2_code)   </span><br><span class="line">        level_3_names.append(level_3_name)  </span><br><span class="line">        level_3_codes.append(level_3_code)   </span><br><span class="line">        level_3_notes.append(notes)</span><br><span class="line"> </span><br><span class="line"><span class="comment">#根据以上信息⽣生成dataframe格式的数据</span></span><br><span class="line">df_taxonomy = pd.DataFrame(&#123;   </span><br><span class="line">    <span class="string">&#x27;group_name&#x27;</span> : level_1_names,  </span><br><span class="line">    <span class="string">&#x27;archive_name&#x27;</span> : level_2_names, </span><br><span class="line">    <span class="string">&#x27;archive_id&#x27;</span> : level_2_codes,  </span><br><span class="line">    <span class="string">&#x27;category_name&#x27;</span> : level_3_names, </span><br><span class="line">    <span class="string">&#x27;categories&#x27;</span> : level_3_codes, </span><br><span class="line">    <span class="string">&#x27;category_description&#x27;</span>: level_3_notes  </span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">df_taxonomy.groupby([<span class="string">&quot;group_name&quot;</span>,<span class="string">&quot;archive_name&quot;</span>])</span><br><span class="line">df_taxonomy</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">root = soup.find(<span class="string">&#x27;div&#x27;</span>,&#123;<span class="string">&#x27;id&#x27;</span>:<span class="string">&#x27;category_taxonomy_list&#x27;</span>&#125;) <span class="comment">#找出 BeautifulSoup 对应 的标签⼊入⼝口 </span></span><br><span class="line">tags = root.find_all([<span class="string">&quot;h2&quot;</span>,<span class="string">&quot;h3&quot;</span>,<span class="string">&quot;h4&quot;</span>,<span class="string">&quot;p&quot;</span>], recursive=<span class="literal">True</span>) <span class="comment">#读取 tags</span></span><br><span class="line"> </span><br><span class="line"><span class="comment">#初始化 str 和 list 变量量 </span></span><br><span class="line">level_1_name = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_2_name = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_2_code = <span class="string">&quot;&quot;</span> </span><br><span class="line">level_1_names = [] </span><br><span class="line">level_2_codes = [] </span><br><span class="line">level_2_names = [] </span><br><span class="line">level_3_codes = [] </span><br><span class="line">level_3_names = [] </span><br><span class="line">level_3_notes = []</span><br><span class="line"> </span><br><span class="line"><span class="comment">#进⾏行行 </span></span><br><span class="line"><span class="keyword">for</span> t <span class="keyword">in</span> tags:    </span><br><span class="line">    <span class="keyword">if</span> t.name == <span class="string">&quot;h2&quot;</span>:        </span><br><span class="line">        level_1_name = t.text            </span><br><span class="line">        level_2_code = t.text        </span><br><span class="line">        level_2_name = t.text    </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;h3&quot;</span>:       </span><br><span class="line">        raw = t.text      </span><br><span class="line">        level_2_code = re.sub(<span class="string">r&quot;(.*)\((.*)\)&quot;</span>,<span class="string">r&quot;\2&quot;</span>,raw) <span class="comment">#正则表达式：模式字符串串： (.*)\((.*)\)；被替换字符串串&quot;\2&quot;；被处理理字符串串：raw       </span></span><br><span class="line">        level_2_name = re.sub(<span class="string">r&quot;(.*)\((.*)\)&quot;</span>,<span class="string">r&quot;\1&quot;</span>,raw)    </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;h4&quot;</span>:      </span><br><span class="line">        raw = t.text       </span><br><span class="line">        level_3_code = re.sub(<span class="string">r&quot;(.*) \((.*)\)&quot;</span>,<span class="string">r&quot;\1&quot;</span>,raw)     </span><br><span class="line">        level_3_name = re.sub(<span class="string">r&quot;(.*) \((.*)\)&quot;</span>,<span class="string">r&quot;\2&quot;</span>,raw)   </span><br><span class="line">    <span class="keyword">elif</span> t.name == <span class="string">&quot;p&quot;</span>:        </span><br><span class="line">        notes = t.text        </span><br><span class="line">        level_1_names.append(level_1_name)      </span><br><span class="line">        level_2_names.append(level_2_name)  </span><br><span class="line">        level_2_codes.append(level_2_code)   </span><br><span class="line">        level_3_names.append(level_3_name)  </span><br><span class="line">        level_3_codes.append(level_3_code)   </span><br><span class="line">        level_3_notes.append(notes)</span><br><span class="line"> </span><br><span class="line"><span class="comment">#根据以上信息⽣生成dataframe格式的数据</span></span><br><span class="line">df_taxonomy = pd.DataFrame(&#123;   </span><br><span class="line">    <span class="string">&#x27;group_name&#x27;</span> : level_1_names,  </span><br><span class="line">    <span class="string">&#x27;archive_name&#x27;</span> : level_2_names, </span><br><span class="line">    <span class="string">&#x27;archive_id&#x27;</span> : level_2_codes,  </span><br><span class="line">    <span class="string">&#x27;category_name&#x27;</span> : level_3_names, </span><br><span class="line">    <span class="string">&#x27;categories&#x27;</span> : level_3_codes, </span><br><span class="line">    <span class="string">&#x27;category_description&#x27;</span>: level_3_notes  </span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">df_taxonomy.groupby([<span class="string">&quot;group_name&quot;</span>,<span class="string">&quot;archive_name&quot;</span>])</span><br><span class="line">df_taxonomy</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -1191,7 +1800,7 @@ f.close()</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1304,7 +1913,7 @@ f.close()</code></pre>
       <td>stat.TH is an alias for math.ST. Asymptotics, ...</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>155 rows × 6 columns</p>
 </div>
 
@@ -1315,7 +1924,7 @@ f.close()</code></pre>
 - 去除重复id以及组名
 - 再以组名分类计数</code></pre>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_df = data.merge(df_taxonomy, on=<span class="string">&#x27;categories&#x27;</span>, how=<span class="string">&#x27;left&#x27;</span>).drop_duplicates([<span class="string">&#x27;id&#x27;</span>, <span class="string">&quot;group_name&quot;</span>]).groupby(<span class="string">&#x27;group_name&#x27;</span>).agg(&#123;<span class="string">&#x27;id&#x27;</span>:<span class="string">&#x27;count&#x27;</span>&#125;).sort_values(by=<span class="string">&quot;id&quot;</span>, ascending=<span class="literal">False</span>).reset_index()</span><br><span class="line">_df[<span class="string">&#x27;count&#x27;</span>] = _df[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line"><span class="keyword">del</span> _df[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line"> </span><br><span class="line">_df</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_df = data.merge(df_taxonomy, on=<span class="string">&#x27;categories&#x27;</span>, how=<span class="string">&#x27;left&#x27;</span>).drop_duplicates([<span class="string">&#x27;id&#x27;</span>, <span class="string">&quot;group_name&quot;</span>]).groupby(<span class="string">&#x27;group_name&#x27;</span>).agg(&#123;<span class="string">&#x27;id&#x27;</span>:<span class="string">&#x27;count&#x27;</span>&#125;).sort_values(by=<span class="string">&quot;id&quot;</span>, ascending=<span class="literal">False</span>).reset_index()</span><br><span class="line">_df[<span class="string">&#x27;count&#x27;</span>] = _df[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line"><span class="keyword">del</span> _df[<span class="string">&#x27;id&#x27;</span>]</span><br><span class="line"> </span><br><span class="line">_df</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -1333,7 +1942,7 @@ f.close()</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -1383,19 +1992,22 @@ f.close()</code></pre>
       <td>576</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 </div>
 
 
 
-<h2 id="任务3数据可视化"><a href="#任务3数据可视化" class="headerlink" title="任务3数据可视化"></a>任务3数据可视化</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要使用matplotlib库</span></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">15</span>, <span class="number">12</span>)) <span class="comment">#设置图大小</span></span><br><span class="line">explode = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.2</span>, <span class="number">0.1</span>)</span><br><span class="line">plt.pie(_df[<span class="string">&quot;count&quot;</span>], labels = _df[<span class="string">&quot;group_name&quot;</span>], autopct = <span class="string">&#x27;%1.2f%%&#x27;</span>,\</span><br><span class="line">       startangle=<span class="number">160</span>, explode=explode)</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+
+        <h2 id="任务3数据可视化"   >
+          <a href="#任务3数据可视化" class="heading-link"><i class="fas fa-link"></i></a>任务3数据可视化</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 主要使用matplotlib库</span></span><br><span class="line">fig = plt.figure(figsize = (<span class="number">15</span>, <span class="number">12</span>)) <span class="comment">#设置图大小</span></span><br><span class="line">explode = (<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.3</span>, <span class="number">0.2</span>, <span class="number">0.1</span>)</span><br><span class="line">plt.pie(_df[<span class="string">&quot;count&quot;</span>], labels = _df[<span class="string">&quot;group_name&quot;</span>], autopct = <span class="string">&#x27;%1.2f%%&#x27;</span>,\</span><br><span class="line">       startangle=<span class="number">160</span>, explode=explode)</span><br><span class="line">plt.tight_layout()</span><br><span class="line">plt.show()</span><br></pre></td></tr></table></div></figure>
 
 <img src="/2021/01/19/Task1/Task1-1.png" class="">
 
 <blockquote>
 <p>额外任务统计各个子领域内2019年及以后的paper数量</p>
 </blockquote>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">group_name=<span class="string">&quot;Computer Science&quot;</span></span><br><span class="line">cats = data.merge(df_taxonomy, on=<span class="string">&quot;categories&quot;</span>)\</span><br><span class="line">    .query(<span class="string">&quot;group_name == @group_name&quot;</span>) </span><br><span class="line"></span><br><span class="line">cats.groupby([<span class="string">&quot;year&quot;</span>, <span class="string">&quot;category_name&quot;</span>])\</span><br><span class="line">    .count().reset_index().pivot(index = <span class="string">&#x27;category_name&#x27;</span>,\</span><br><span class="line">                                 columns = <span class="string">&quot;year&quot;</span>, values = <span class="string">&quot;id&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果报错,很有可能是输入变量时输错了</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">group_name=<span class="string">&quot;Computer Science&quot;</span></span><br><span class="line">cats = data.merge(df_taxonomy, on=<span class="string">&quot;categories&quot;</span>)\</span><br><span class="line">    .query(<span class="string">&quot;group_name == @group_name&quot;</span>) </span><br><span class="line"></span><br><span class="line">cats.groupby([<span class="string">&quot;year&quot;</span>, <span class="string">&quot;category_name&quot;</span>])\</span><br><span class="line">    .count().reset_index().pivot(index = <span class="string">&#x27;category_name&#x27;</span>,\</span><br><span class="line">                                 columns = <span class="string">&quot;year&quot;</span>, values = <span class="string">&quot;id&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 如果报错,很有可能是输入变量时输错了</span></span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -1413,7 +2025,7 @@ f.close()</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th>year</th>
@@ -1623,12 +2235,15 @@ f.close()</code></pre>
       <td>133</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 </div>
 
 
 
-<h2 id="学习收获"><a href="#学习收获" class="headerlink" title="学习收获"></a>学习收获</h2><ul>
+
+        <h2 id="学习收获"   >
+          <a href="#学习收获" class="heading-link"><i class="fas fa-link"></i></a>学习收获</h2>
+      <ul>
 <li>报了很多bug,知道自己代码能力不强<br /></li>
 <li>认识很多人,向大佬们致敬<br /></li>
 <li>试着使用markdown — jupyter notebook里的markdown换个行还非得用br标签,刚开始感觉好麻烦</li>
@@ -1637,7 +2252,7 @@ f.close()</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk44t98i00031su55b1sdso3" data-title="The TASK1" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task1/" data-id="ckk8fov5v0003ocu5g6xhau7u" data-title="The TASK1" class="article-share-link">Share</a>
       
       
       
@@ -1671,20 +2286,35 @@ f.close()</code></pre>
     
     <div class="e-content article-entry" itemprop="articleBody">
       
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+        <p>Welcome to <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/" >Hexo</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>! This is your very first post. Check <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/" >documentation</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> for more info. If you get any problems when using Hexo, you can find the answer in <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html" >troubleshooting</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span> or you can ask me on <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues" >GitHub</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>.</p>
+
+        <h2 id="Quick-Start"   >
+          <a href="#Quick-Start" class="heading-link"><i class="fas fa-link"></i></a>Quick Start</h2>
+      
+        <h3 id="Create-a-new-post"   >
+          <a href="#Create-a-new-post" class="heading-link"><i class="fas fa-link"></i></a>Create a new post</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></div></figure>
+<p>More info: <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html" >Writing</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="Run-server"   >
+          <a href="#Run-server" class="heading-link"><i class="fas fa-link"></i></a>Run server</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></div></figure>
+<p>More info: <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/server.html" >Server</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="Generate-static-files"   >
+          <a href="#Generate-static-files" class="heading-link"><i class="fas fa-link"></i></a>Generate static files</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></div></figure>
+<p>More info: <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html" >Generating</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
+
+        <h3 id="Deploy-to-remote-sites"   >
+          <a href="#Deploy-to-remote-sites" class="heading-link"><i class="fas fa-link"></i></a>Deploy to remote sites</h3>
+      <figure class="highlight bash"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></div></figure>
+<p>More info: <span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html" >Deployment</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span></p>
 
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/hello-world/" data-id="ckk44t98c00021su5he43bf3e" data-title="Hello World" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/hello-world/" data-id="ckk8fov5f0002ocu5cvufft5t" data-title="Hello World" class="article-share-link">Share</a>
       
       
       
@@ -1725,6 +2355,10 @@ f.close()</code></pre>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/01/22/Task4/">The TASK4</a>
+          </li>
         
           <li>
             <a href="/2021/01/19/Task3/">The TASK3</a>

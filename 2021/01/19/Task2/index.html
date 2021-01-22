@@ -6,12 +6,12 @@
   
   <title>The TASK2 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <meta name="description" content="DW21期数据分析方向  任务主题：论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；任务内容：论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； 任务成果：学习 Pandas 的字符串串操作 知识前导 数据处理  python调用print(‘字符串’)检查转义字符 print(r”字符串”)停止检查    字符处理  说白了就是切分字符串,建议访问https:&#x2F;">
+  <meta name="description" content="DW21期数据分析方向  任务主题：论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；任务内容：论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； 任务成果：学习 Pandas 的字符串串操作                     知识前导        数据处理  python调用print(‘字符串’)检查转义字符 print(r”字符串”)停止检查    字">
 <meta property="og:type" content="article">
 <meta property="og:title" content="The TASK2">
 <meta property="og:url" content="http://example.com/2021/01/19/Task2/index.html">
 <meta property="og:site_name" content="Hexo">
-<meta property="og:description" content="DW21期数据分析方向  任务主题：论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；任务内容：论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； 任务成果：学习 Pandas 的字符串串操作 知识前导 数据处理  python调用print(‘字符串’)检查转义字符 print(r”字符串”)停止检查    字符处理  说白了就是切分字符串,建议访问https:&#x2F;">
+<meta property="og:description" content="DW21期数据分析方向  任务主题：论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；任务内容：论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； 任务成果：学习 Pandas 的字符串串操作                     知识前导        数据处理  python调用print(‘字符串’)检查转义字符 print(r”字符串”)停止检查    字">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2021/01/19/Task2/output_18_1.png">
 <meta property="og:image" content="http://example.com/2021/01/19/Task2/output_18_1.png">
@@ -102,12 +102,15 @@
 <p>DW21期数据分析方向</p>
 </blockquote>
 <p><code>任务主题：</code>论⽂文作者统计，统计所有论⽂文作者出现评率Top10的姓名；<br /><br><code>任务内容：</code>论⽂文作者的统计、使⽤用 Pandas 读取数据并使⽤用字符串串操作； <br /><br><code>任务成果：</code>学习 Pandas 的字符串串操作</p>
-<h3 id="知识前导"><a href="#知识前导" class="headerlink" title="知识前导"></a>知识前导</h3><ol>
+
+        <h3 id="知识前导"   >
+          <a href="#知识前导" class="heading-link"><i class="fas fa-link"></i></a>知识前导</h3>
+      <ol>
 <li><p>数据处理</p>
 <p> python调用print(‘字符串’)检查转义字符<br> print(r”字符串”)停止检查  </p>
 </li>
 <li><p>字符处理</p>
-<p> 说白了就是切分字符串,建议访问<a target="_blank" rel="noopener" href="https://www.cnblogs.com/lvtaohome/p/11215954.html">https://www.cnblogs.com/lvtaohome/p/11215954.html</a>  </p>
+<p> 说白了就是切分字符串,建议访问<span class="exturl"><a class="exturl__link"   target="_blank" rel="noopener" href="https://www.cnblogs.com/lvtaohome/p/11215954.html" >https://www.cnblogs.com/lvtaohome/p/11215954.html</a><span class="exturl__icon"><i class="fas fa-external-link-alt"></i></span></span>  </p>
 </li>
 <li><p>markdown换行技巧<br> 空两格回车,快速普通换行</p>
 <p> 两下回车段落式换行  </p>
@@ -119,13 +122,25 @@
 <p> 必须夸夸<code>python</code>,比<code>C++</code>啥的强太多了,基本上你都不需要写函数,只需要明白这个函数能干啥,正确的参数是啥.</p>
 </li>
 </ol>
-<h3 id="练习部分补充代码"><a href="#练习部分补充代码" class="headerlink" title="练习部分补充代码"></a>练习部分补充代码</h3><h2 id="勘误-原文2-3字符串处理有一个例子"><a href="#勘误-原文2-3字符串处理有一个例子" class="headerlink" title="勘误:原文2.3字符串处理有一个例子"></a><strong>勘误:原文2.3字符串处理有一个例子</strong></h2><p>print(“var2 <strong>[1:5]</strong>: “, var2 <strong>[0:7]</strong>)<br>代码切的是a部分,结果输出了b部分,很容易误导新手</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下时字符串切片的补充代码,可以略过</span></span><br><span class="line">var1 = <span class="string">&#x27;I\&#x27;m a handsome boy.&#x27;</span></span><br><span class="line">var2 = <span class="string">&#x27;Why i am so smart?&#x27;</span></span><br><span class="line"><span class="comment">#请略过我自恋部分</span></span><br><span class="line"></span><br><span class="line">print(var1[-<span class="number">13</span>:])</span><br><span class="line">print(var2[-<span class="number">6</span>:-<span class="number">1</span>])</span><br></pre></td></tr></table></figure>
+
+        <h3 id="练习部分补充代码"   >
+          <a href="#练习部分补充代码" class="heading-link"><i class="fas fa-link"></i></a>练习部分补充代码</h3>
+      
+        <h2 id="勘误-原文2-3字符串处理有一个例子"   >
+          <a href="#勘误-原文2-3字符串处理有一个例子" class="heading-link"><i class="fas fa-link"></i></a>勘误:原文2.3字符串处理有一个例子</h2>
+      <p>print(“var2 <strong>[1:5]</strong>: “, var2 <strong>[0:7]</strong>)<br>代码切的是a部分,结果输出了b部分,很容易误导新手</p>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#以下时字符串切片的补充代码,可以略过</span></span><br><span class="line">var1 = <span class="string">&#x27;I\&#x27;m a handsome boy.&#x27;</span></span><br><span class="line">var2 = <span class="string">&#x27;Why i am so smart?&#x27;</span></span><br><span class="line"><span class="comment">#请略过我自恋部分</span></span><br><span class="line"></span><br><span class="line">print(var1[-<span class="number">13</span>:])</span><br><span class="line">print(var2[-<span class="number">6</span>:-<span class="number">1</span>])</span><br></pre></td></tr></table></div></figure>
 <pre><code>handsome boy.
 smart</code></pre>
-<h2 id="任务1日常搭建环境"><a href="#任务1日常搭建环境" class="headerlink" title="任务1日常搭建环境"></a>任务1日常搭建环境</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#写程序第一件事干什么,相信不用我再说了吧</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns </span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="comment"># win10只能安装BeautifulSoup4,并且导包的时候必须从bs4中导入</span></span><br></pre></td></tr></table></figure>
+
+        <h2 id="任务1日常搭建环境"   >
+          <a href="#任务1日常搭建环境" class="heading-link"><i class="fas fa-link"></i></a>任务1日常搭建环境</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#写程序第一件事干什么,相信不用我再说了吧</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns </span><br><span class="line"><span class="keyword">import</span> re</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"><span class="keyword">import</span> json</span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup</span><br><span class="line"><span class="comment"># win10只能安装BeautifulSoup4,并且导包的时候必须从bs4中导入</span></span><br></pre></td></tr></table></div></figure>
 <blockquote>
-<h2 id="对原文改进"><a href="#对原文改进" class="headerlink" title="对原文改进"></a>对原文改进</h2></blockquote>
+
+        <h2 id="对原文改进"   >
+          <a href="#对原文改进" class="heading-link"><i class="fas fa-link"></i></a>对原文改进</h2>
+      </blockquote>
 <hr>
 <pre><code>data = [] with open(&quot;arxiv-metadata-oai-snapshot.json&quot;, &#39;r&#39;) as f:     
     for **idx,** line in **enumerate(f)**:         
@@ -136,9 +151,9 @@ smart</code></pre>
         data = pd.DataFrame(data) </code></pre>
 <hr>
 <p>我想说明的是<strong>第二行不用enumrate函数照样能用,而且减少了多余的操作</strong></p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123;<span class="string">&#x27;authors&#x27;</span> : d[<span class="string">&#x27;authors&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;authors_parsed&#x27;</span> : d[<span class="string">&#x27;authors_parsed&#x27;</span>]  &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data = []</span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    <span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">        d = json.loads(line)</span><br><span class="line">        d = &#123;<span class="string">&#x27;authors&#x27;</span> : d[<span class="string">&#x27;authors&#x27;</span>], <span class="string">&#x27;categories&#x27;</span> : d[<span class="string">&#x27;categories&#x27;</span>],\</span><br><span class="line">             <span class="string">&#x27;authors_parsed&#x27;</span> : d[<span class="string">&#x27;authors_parsed&#x27;</span>]  &#125;</span><br><span class="line">        data.append(d)</span><br><span class="line"></span><br><span class="line">data = pd.DataFrame(data)</span><br></pre></td></tr></table></div></figure>
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">data</span><br></pre></td></tr></table></div></figure>
 
 
 
@@ -156,7 +171,7 @@ smart</code></pre>
     text-align: right;
 &#125;</code></pre>
 <p></style></p>
-<table border="1" class="dataframe">
+<div class="table-container"><table border="1" class="dataframe">
   <thead>
     <tr style="text-align: right;">
       <th></th>
@@ -233,23 +248,32 @@ smart</code></pre>
       <td>[[Enomoto, Naoki, , Okayama Univ.], [Ichioka, ...</td>
     </tr>
   </tbody>
-</table>
+</table></div>
 <p>1796911 rows × 3 columns</p>
 </div>
 
 
 
 
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#实验enumrate()功能</span></span><br><span class="line"><span class="comment">#返回[(0, 信息1), (1, 信息2), (2, 信息3)]</span></span><br><span class="line"><span class="comment">#具体请参考[手册](https://www.runoob.com/python/python-func-enumerate.html)</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    a = <span class="built_in">list</span>(<span class="built_in">enumerate</span>(f))</span><br><span class="line"><span class="comment"># 请自行执行代码 a  进行查看 </span></span><br></pre></td></tr></table></figure>
-<h2 id="任务2数据处理"><a href="#任务2数据处理" class="headerlink" title="任务2数据处理"></a>任务2数据处理</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#又到了很抓的数据处理环节</span></span><br><span class="line"><span class="comment">#选择cs.CV下的论文</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">apply算是进阶的条件表达式,检测数据是否满足apply中的函数</span></span><br><span class="line"><span class="string">请参考[csdn博客](https://blog.csdn.net/starmoth/article/details/86323026)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">data2 = data[data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: <span class="string">&#x27;cs.CV&#x27;</span> <span class="keyword">in</span> x)]</span><br><span class="line">all_authors = <span class="built_in">sum</span>(data2[<span class="string">&#x27;authors_parsed&#x27;</span>], []) <span class="comment">#将所有元素整合成大list</span></span><br><span class="line"><span class="comment"># all_authors</span></span><br><span class="line"><span class="comment">#偷偷瞄一眼数据</span></span><br></pre></td></tr></table></figure>
-<h4 id="主线1用直方图列出19年以来发表数最多的10人"><a href="#主线1用直方图列出19年以来发表数最多的10人" class="headerlink" title="主线1用直方图列出19年以来发表数最多的10人"></a>主线1用直方图列出19年以来发表数最多的10人</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">author_names = [<span class="string">&#x27; &#x27;</span>.join(x) <span class="keyword">for</span> x <span class="keyword">in</span> all_authors] <span class="comment">#join()链接函数</span></span><br><span class="line">author_names = pd.DataFrame(author_names)</span><br><span class="line"></span><br><span class="line"><span class="comment">#绘制直方图</span></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>)) <span class="comment">#设置幕布大小</span></span><br><span class="line">temp_val = author_names[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># names = author_names[0].value_counts().index.values[:10]</span></span><br><span class="line"><span class="comment"># _ = plt.yticks(range(0, len(names)), names)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    上面注释这两端文字不知道有什么用</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#实验enumrate()功能</span></span><br><span class="line"><span class="comment">#返回[(0, 信息1), (1, 信息2), (2, 信息3)]</span></span><br><span class="line"><span class="comment">#具体请参考[手册](https://www.runoob.com/python/python-func-enumerate.html)</span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">    a = <span class="built_in">list</span>(<span class="built_in">enumerate</span>(f))</span><br><span class="line"><span class="comment"># 请自行执行代码 a  进行查看 </span></span><br></pre></td></tr></table></div></figure>
+
+        <h2 id="任务2数据处理"   >
+          <a href="#任务2数据处理" class="heading-link"><i class="fas fa-link"></i></a>任务2数据处理</h2>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#又到了很抓的数据处理环节</span></span><br><span class="line"><span class="comment">#选择cs.CV下的论文</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">apply算是进阶的条件表达式,检测数据是否满足apply中的函数</span></span><br><span class="line"><span class="string">请参考[csdn博客](https://blog.csdn.net/starmoth/article/details/86323026)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line">data2 = data[data[<span class="string">&#x27;categories&#x27;</span>].apply(<span class="keyword">lambda</span> x: <span class="string">&#x27;cs.CV&#x27;</span> <span class="keyword">in</span> x)]</span><br><span class="line">all_authors = <span class="built_in">sum</span>(data2[<span class="string">&#x27;authors_parsed&#x27;</span>], []) <span class="comment">#将所有元素整合成大list</span></span><br><span class="line"><span class="comment"># all_authors</span></span><br><span class="line"><span class="comment">#偷偷瞄一眼数据</span></span><br></pre></td></tr></table></div></figure>
+
+        <h4 id="主线1用直方图列出19年以来发表数最多的10人"   >
+          <a href="#主线1用直方图列出19年以来发表数最多的10人" class="heading-link"><i class="fas fa-link"></i></a>主线1用直方图列出19年以来发表数最多的10人</h4>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">author_names = [<span class="string">&#x27; &#x27;</span>.join(x) <span class="keyword">for</span> x <span class="keyword">in</span> all_authors] <span class="comment">#join()链接函数</span></span><br><span class="line">author_names = pd.DataFrame(author_names)</span><br><span class="line"></span><br><span class="line"><span class="comment">#绘制直方图</span></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>)) <span class="comment">#设置幕布大小</span></span><br><span class="line">temp_val = author_names[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># names = author_names[0].value_counts().index.values[:10]</span></span><br><span class="line"><span class="comment"># _ = plt.yticks(range(0, len(names)), names)</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    上面注释这两端文字不知道有什么用</span></span><br><span class="line"><span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>Text(0.5, 0, &#39;Count&#39;)</code></pre>
 <p><img src="output_18_1.png" alt="png"></p>
 <blockquote>
-<h2 id="对原文改进-1"><a href="#对原文改进-1" class="headerlink" title="对原文改进"></a>对原文改进</h2></blockquote>
+
+        <h2 id="对原文改进-1"   >
+          <a href="#对原文改进-1" class="heading-link"><i class="fas fa-link"></i></a>对原文改进</h2>
+      </blockquote>
 <hr>
 <p>原文  </p>
 <pre><code> authors_lastnames = [x[0] for x in all_authors]   
@@ -261,13 +285,19 @@ smart</code></pre>
 <pre><code> plt.ylabel(&#39;Author&#39;) plt.xlabel(&#39;Count&#39;)  </code></pre>
 <hr>
 <p>我想说明的是<strong>不用加粗无缩进的两行照样能用</strong><br>我不清楚这两行的意义在哪里,后面根本没有调用names和_</p>
-<h4 id="主线2直方图列出发表数最多10人的姓"><a href="#主线2直方图列出发表数最多10人的姓" class="headerlink" title="主线2直方图列出发表数最多10人的姓"></a>主线2直方图列出发表数最多10人的姓</h4><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">author_lastnames = [x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> all_authors]</span><br><span class="line"><span class="comment">#all_authors是以人为行,姓名为列的二维数组</span></span><br><span class="line">author_lastnames = pd.DataFrame(author_lastnames)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">author_lastnames[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+        <h4 id="主线2直方图列出发表数最多10人的姓"   >
+          <a href="#主线2直方图列出发表数最多10人的姓" class="heading-link"><i class="fas fa-link"></i></a>主线2直方图列出发表数最多10人的姓</h4>
+      <figure class="highlight python"><div class="table-container"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">author_lastnames = [x[<span class="number">0</span>] <span class="keyword">for</span> x <span class="keyword">in</span> all_authors]</span><br><span class="line"><span class="comment">#all_authors是以人为行,姓名为列的二维数组</span></span><br><span class="line">author_lastnames = pd.DataFrame(author_lastnames)</span><br><span class="line"></span><br><span class="line">plt.figure(figsize = (<span class="number">10</span>, <span class="number">6</span>))</span><br><span class="line">author_lastnames[<span class="number">0</span>].value_counts().head(<span class="number">10</span>).plot(kind = <span class="string">&#x27;barh&#x27;</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">plt.ylabel(<span class="string">&#x27;Author&#x27;</span>)</span><br><span class="line">plt.xlabel(<span class="string">&#x27;Count&#x27;</span>)</span><br></pre></td></tr></table></div></figure>
 
 
 
 <pre><code>Text(0.5, 0, &#39;Count&#39;)</code></pre>
 <p><img src="output_18_1.png" alt="png"></p>
-<h3 id="感悟"><a href="#感悟" class="headerlink" title="感悟"></a>感悟</h3><blockquote>
+
+        <h3 id="感悟"   >
+          <a href="#感悟" class="heading-link"><i class="fas fa-link"></i></a>感悟</h3>
+      <blockquote>
 <ol>
 <li>使用markdown更得心应手了  </li>
 <li>基本上流程懂了</li>
@@ -280,7 +310,7 @@ smart</code></pre>
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk44t98c00011su5ezkyd58f" data-title="The TASK2" class="article-share-link">Share</a>
+      <a data-url="http://example.com/2021/01/19/Task2/" data-id="ckk8fov5f0000ocu5b1r0h2yl" data-title="The TASK2" class="article-share-link">Share</a>
       
       
       
@@ -338,6 +368,10 @@ smart</code></pre>
     <h3 class="widget-title">Recent Posts</h3>
     <div class="widget">
       <ul>
+        
+          <li>
+            <a href="/2021/01/22/Task4/">The TASK4</a>
+          </li>
         
           <li>
             <a href="/2021/01/19/Task3/">The TASK3</a>
