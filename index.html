@@ -71,6 +71,91 @@
       <div class="outer">
         <section id="main">
   
+    <article id="post-Task5" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2021/01/25/Task5/" class="article-date">
+  <time class="dt-published" datetime="2021-01-25T15:09:30.405Z" itemprop="datePublished">2021-01-25</time>
+</a>
+    
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="p-name article-title" href="/2021/01/25/Task5/">TASK5</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="任务简要"><a href="#任务简要" class="headerlink" title="任务简要"></a>任务简要</h2><p><code>学习主题：</code>作者关联（数据建模任务），对论⽂文作者关系进⾏行行建模，统计常出现的作者关系；<br><code>学习内容：</code>构建作者关系图，挖掘作者关系<br><code>学习成果：</code>论⽂文作者知识图谱、图关系挖掘 </p>
+<h2 id="任务1准备数据"><a href="#任务1准备数据" class="headerlink" title="任务1准备数据"></a>任务1准备数据</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns <span class="comment">#⽤用于画图 </span></span><br><span class="line"><span class="keyword">from</span> bs4 <span class="keyword">import</span> BeautifulSoup <span class="comment">#⽤用于爬取arxiv的数据 </span></span><br><span class="line"><span class="keyword">import</span> re <span class="comment">#⽤用于正则表达式，匹配字符串串的模式 </span></span><br><span class="line"><span class="keyword">import</span> requests <span class="comment">#⽤用于⽹网络连接，发送⽹网络请求，使⽤用域名获取对应信息 </span></span><br><span class="line"><span class="keyword">import</span> json <span class="comment">#读取数据，我们的数据为json格式的</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd <span class="comment">#数据处理理，数据分析 </span></span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt <span class="comment">#画图⼯工具</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">data  = [] <span class="comment">#初始化 #使⽤用with语句句优势：1.⾃自动关闭⽂文件句句柄；2.⾃自动显示（处理理）⽂文件读取数据异常 </span></span><br><span class="line"><span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;arxiv-metadata-oai-snapshot.json&quot;</span>, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:     </span><br><span class="line">    <span class="keyword">for</span> idx, line <span class="keyword">in</span> <span class="built_in">enumerate</span>(f):        </span><br><span class="line">        d = json.loads(line)       </span><br><span class="line">        d = &#123;<span class="string">&#x27;authors_parsed&#x27;</span>: d[<span class="string">&#x27;authors_parsed&#x27;</span>]&#125;       </span><br><span class="line">        data.append(d, ignore_index = <span class="literal">True</span>)      </span><br><span class="line">        data = pd.DataFrame(data) <span class="comment">#将list变为dataframe格式，⽅方便便使⽤用pandas进⾏行行分析</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<pre><code>---------------------------------------------------------------------------
+
+TypeError                                 Traceback (most recent call last)
+
+&lt;ipython-input-16-b81ff7c88bc0&gt; in &lt;module&gt;
+      4         d = json.loads(line)
+      5         d = &#123;&#39;authors_parsed&#39;: d[&#39;authors_parsed&#39;]&#125;
+----&gt; 6         data.append(d, ignore_index = True)
+      7         data = pd.DataFrame(data) #将list变为dataframe格式，⽅方便便使⽤用pandas进⾏行行分析
+
+
+TypeError: append() takes no keyword arguments</code></pre>
+<h2 id="任务2构建思维导图"><a href="#任务2构建思维导图" class="headerlink" title="任务2构建思维导图"></a>任务2构建思维导图</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> networkx <span class="keyword">as</span> nx <span class="comment"># 创建⽆无向图 </span></span><br><span class="line">G = nx.Graph()</span><br><span class="line"> </span><br><span class="line"><span class="comment"># 只⽤用五篇论⽂文进⾏行行构建 </span></span><br><span class="line"><span class="keyword">for</span> row <span class="keyword">in</span> data.iloc[:<span class="number">5</span>].itertuples():    </span><br><span class="line">    authors = row[<span class="number">1</span>]    </span><br><span class="line">    authors = [<span class="string">&#x27; &#x27;</span>.join(x[:-<span class="number">1</span>]) <span class="keyword">for</span> x <span class="keyword">in</span> authors] </span><br><span class="line">    </span><br><span class="line"><span class="comment"># 第⼀一个作者 与 其他作者链接    </span></span><br><span class="line"><span class="keyword">for</span> author <span class="keyword">in</span> authors[<span class="number">1</span>:]:       </span><br><span class="line">    G.add_edge(authors[<span class="number">0</span>],author) <span class="comment">#　添加节点２，３并链接２３节点</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nx.draw(G, with_labels=<span class="literal">True</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="output_6_0.png" alt="png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">try</span>:    </span><br><span class="line">    print(nx.dijkstra_path(G, <span class="string">&#x27;Balázs C.&#x27;</span>, <span class="string">&#x27;Ziambaras Eleni&#x27;</span>)) </span><br><span class="line"><span class="keyword">except</span>:    </span><br><span class="line">    print(<span class="string">&#x27;No path&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>No path</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 计算论⽂文关系中有多少个联通⼦子图 </span></span><br><span class="line">print(<span class="built_in">len</span>(nx.communicability(G)))</span><br><span class="line"> </span><br><span class="line">plt.loglog(degree_sequence, <span class="string">&quot;b-&quot;</span>, marker=<span class="string">&quot;o&quot;</span>) </span><br><span class="line">plt.title(<span class="string">&quot;Degree rank plot&quot;</span>) </span><br><span class="line">plt.ylabel(<span class="string">&quot;degree&quot;</span>) </span><br><span class="line">plt.xlabel(<span class="string">&quot;rank&quot;</span>)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># draw graph in inset plt.axes([0.45, 0.45, 0.45, 0.45]) Gcc = G.subgraph(sorted(nx.connected_components(G), key=len, reverse=True)[0])</span></span><br><span class="line"> </span><br><span class="line">pos = nx.spring_layout(Gcc)</span><br><span class="line">plt.axis(<span class="string">&quot;off&quot;</span>)</span><br><span class="line">nx.draw_networkx_nodes(Gcc, pos, node_size=<span class="number">20</span>)</span><br><span class="line">nx.draw_networkx_edges(Gcc, pos, alpha=<span class="number">0.4</span>) </span><br><span class="line">plt.show()</span><br></pre></td></tr></table></figure>
+<pre><code>4
+
+
+
+---------------------------------------------------------------------------
+
+NameError                                 Traceback (most recent call last)
+
+&lt;ipython-input-13-c694e369e080&gt; in &lt;module&gt;
+      2 print(len(nx.communicability(G)))
+      3 
+----&gt; 4 plt.loglog(degree_sequence, &quot;b-&quot;, marker=&quot;o&quot;)
+      5 plt.title(&quot;Degree rank plot&quot;)
+      6 plt.ylabel(&quot;degree&quot;)
+
+
+NameError: name &#39;degree_sequence&#39; is not defined</code></pre>
+<h2 id="任务总结"><a href="#任务总结" class="headerlink" title="任务总结"></a>任务总结</h2><hr>
+<ul>
+<li>这是一个未完成的任务,我会在后续将之更新</li>
+<li>善始善终吧,前面都坚持下来了,后面也不能松懈呀</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2021/01/25/Task5/" data-id="ckkcpk7ya000000u5c61webmz" data-title="TASK5" class="article-share-link">Share</a>
+      
+      
+      
+    </footer>
+  </div>
+  
+</article>
+
+
+
+  
     <article id="post-Task4" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
     <a href="/2021/01/22/Task4/" class="article-date">
@@ -2357,6 +2442,10 @@ f.close()</code></pre>
       <ul>
         
           <li>
+            <a href="/2021/01/25/Task5/">TASK5</a>
+          </li>
+        
+          <li>
             <a href="/2021/01/22/Task4/">The TASK4</a>
           </li>
         
@@ -2370,10 +2459,6 @@ f.close()</code></pre>
         
           <li>
             <a href="/2021/01/19/Task1/">The TASK1</a>
-          </li>
-        
-          <li>
-            <a href="/2021/01/19/hello-world/">Hello World</a>
           </li>
         
       </ul>
